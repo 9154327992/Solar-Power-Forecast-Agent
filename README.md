@@ -167,9 +167,9 @@ A Streamlit web application was developed to provide an interactive interface fo
 *   View forecasting history
     
 
-**Project Structure**
-=====================
+## **Project Structure** 
 
+```
 Solar-Power-Forecasting/
 │
 ├── Solar Power Forecasting.ipynb
@@ -178,7 +178,8 @@ Solar-Power-Forecasting/
 ├── model.pkl
 ├── scaler.pkl
 ├── README.md
-└── requirements.txt`
+└── requirements.txt
+```
 
 **Results**
 ===========
