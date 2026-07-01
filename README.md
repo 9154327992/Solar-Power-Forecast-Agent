@@ -170,9 +170,16 @@ A Streamlit web application was developed to provide an interactive interface fo
 **Project Structure**
 =====================
 
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   Solar-Power-Forecasting/  │  ├── Solar Power Forecasting.ipynb  ├── app.py  ├── model.pkl  ├── scaler.pkl  ├── solar_dataset.csv  ├── patient_records.db  ├── requirements.txt  └── README.md   `
-
-_(If you use another database name, replace patient\_records.db with something like forecast\_records.db.)_
+Solar-Power-Forecasting/  │  ├── Solar Power Forecasting.ipynb  ├── app.py  ├── model.pkl  ├── scaler.pkl  ├── solar_dataset.csv  ├── patient_records.db  ├── requirements.txt  └── README.md
+Solar-Power-Forecasting/
+│
+├── Solar Power Forecasting.ipynb
+├── solar_dataset.csv
+├── app.py
+├── model.pkl
+├── scaler.pkl
+├── README.md
+└── requirements.txt`
 
 **Results**
 ===========
@@ -223,4 +230,4 @@ A complete **Solar Power Forecasting System** was developed using Machine Learni
 
 **Live Demo:**
 
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   https://solar-power-forecast-agent-jocmgamps44dl2lhwqt7xa.streamlit.app/   `
+https://solar-power-forecast-agent-jocmgamps44dl2lhwqt7xa.streamlit.app/   `
