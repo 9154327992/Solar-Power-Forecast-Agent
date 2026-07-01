@@ -142,7 +142,7 @@ Generates reports containing:
 
 ### Example
 
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   Predicted Power: 5.82 kW  Forecast Accuracy: High  Power Status: Good Generation  Recommendation:  Suitable conditions for efficient solar power generation.   `
+Predicted Power: 5.82 kW  Forecast Accuracy: High  Power Status: Good Generation  Recommendation:  Suitable conditions for efficient solar power generation.   `
 
 **Forecast Records**
 --------------------
@@ -170,7 +170,6 @@ A Streamlit web application was developed to provide an interactive interface fo
 **Project Structure**
 =====================
 
-Solar-Power-Forecasting/  │  ├── Solar Power Forecasting.ipynb  ├── app.py  ├── model.pkl  ├── scaler.pkl  ├── solar_dataset.csv  ├── patient_records.db  ├── requirements.txt  └── README.md
 Solar-Power-Forecasting/
 │
 ├── Solar Power Forecasting.ipynb
