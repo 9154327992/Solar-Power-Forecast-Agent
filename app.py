@@ -842,12 +842,6 @@ Developed using
 
 </p>
 
-<p>
-
-Final Year Major Project
-
-</p>
-
 </div>
 """,
 
