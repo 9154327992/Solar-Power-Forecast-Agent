@@ -62,47 +62,6 @@ model = joblib.load("model.pkl")
 scaler = joblib.load("scaler.pkl")
 
 # -----------------------------
-# Sidebar
-# -----------------------------
-
-st.sidebar.title("☀ Solar Forecast")
-
-st.sidebar.success("Machine Learning Model")
-
-st.sidebar.metric(
-    "Algorithm",
-    "XGBoost"
-)
-
-st.sidebar.metric(
-    "Dataset",
-    "8760 Records"
-)
-
-st.sidebar.metric(
-    "Features",
-    "9"
-)
-
-st.sidebar.markdown("---")
-
-st.sidebar.info(
-"""
-### Features
-
-✅ Solar Power Prediction
-
-✅ AI Recommendation
-
-✅ Prediction History
-
-✅ Charts
-
-✅ CSV Download
-"""
-)
-
-# -----------------------------
 # Header
 # -----------------------------
 
