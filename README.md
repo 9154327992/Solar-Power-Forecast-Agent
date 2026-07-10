@@ -291,7 +291,7 @@ Solar-Power-Forecast-Agent/
 
 Clone the repository:
 
-bash git clone https://github.com/your-username/solar-power-forecast-agent.git [URL 🔗](https://github.com/your-username/solar-power-forecast-agent.git)
+bash git clone https://github.com/9154327992/solar-power-forecast-agent.git [URL 🔗](https://github.com/9154327992/solar-power-forecast-agent.git)
 
 Move into the project directory:
 
@@ -318,6 +318,10 @@ http://127.0.0.1:8000/docs [URL 🔗](http://127.0.0.1:8000/docs)
 Start Streamlit Frontend
 
 ```bash python -m streamlit run frontend.py```
+
+Streamlit URL:
+
+https://solar-power-forecast-agent-gk8zjahuz3hgjypbw4zk2p.streamlit.app/ [URL 🔗](https://solar-power-forecast-agent-gk8zjahuz3hgjypbw4zk2p.streamlit.app/)
 
 ------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------
