@@ -309,11 +309,7 @@ Start FastAPI Backend
 
 Backend URL:
 
-http://127.0.0.1:8000 [URL 🔗](http://127.0.0.1:8000/)
-
-API Documentation:
-
-http://127.0.0.1:8000/docs [URL 🔗](http://127.0.0.1:8000/docs)
+https://solar-power-forecast-agent.onrender.com [URL 🔗](https://solar-power-forecast-agent.onrender.com/)
 
 Start Streamlit Frontend
 
