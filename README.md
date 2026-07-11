@@ -277,11 +277,10 @@ Solar-Power-Forecast-Agent/
 ├── backend.py
 ├── model.pkl
 ├── scaler.pkl
-├── prediction_records.db
-├── solar_dataset.csv
+├── Solar_Power_Plant.ipynb
+├── solar Power Dataset.csv
 ├── requirements.txt
-├── README.md
-└── .gitignore
+└── README.md
 ```
 
 ------------------------------------------------------------------------------------------------------------------------------------
