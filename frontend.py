@@ -16,7 +16,7 @@ import requests
 
 import pandas as pd
 
-API_URL = "https://solar-power-forecast-agent.onrender.com/"
+API_URL = "https://solar-power-forecast-agent.onrender.com"
 
 # ============================================================
 # Configure Streamlit Page
@@ -256,7 +256,7 @@ if st.button("🚀 Forecast Solar Power"):
 
     response = requests.post(
 
-        f"{https://solar-power-forecast-agent.onrender.com/}/forecast",
+        f"{API_URL}/forecast",
 
         json={
 
@@ -492,7 +492,7 @@ if st.button("View Prediction History"):
 
     response = requests.get(
 
-        f"{https://solar-power-forecast-agent.onrender.com/}/history"
+        f"{API_URL}/history"
 
     )
 
