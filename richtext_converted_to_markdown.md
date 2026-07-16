@@ -1,50 +1,54 @@
-\# AI Resume Screening Agent
+------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------
+AI Resume Screening Agent
+------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------
 
-\## Project Overview
+***Project Overview:***
 
 The AI Resume Screening Agent is an intelligent recruitment system that automates the resume screening process using Machine Learning and Artificial Intelligence. It helps recruiters analyze resumes, predict candidate selection, generate AI-based resume summaries, identify skill gaps, create interview questions, and provide hiring recommendations through an interactive web application.
 
-The project is developed using \*\*Python, FastAPI, Streamlit, and Scikit-learn\*\* with a \*\*Decision Tree Classifier\*\* trained on a dataset containing approximately \*\*11,000 resumes\*\*.
+The project is developed using Python, FastAPI, Streamlit, and Scikit-learn with a Decision Tree Classifier trained on a dataset containing approximately 11,000 resumes.
 
-\---
+------------------------------------------------------------------------------------------------------------------------------------
 
-\# Features
+Features:
 
-\- Resume Upload (PDF & DOCX)
+- Resume Upload (PDF & DOCX)
 
-\- Resume Text Extraction
+- Resume Text Extraction
 
-\- Resume Parsing
+- Resume Parsing
 
-\- Candidate Information Extraction
+- Candidate Information Extraction
 
-\- Feature Extraction
+- Feature Extraction
 
-\- Decision Tree Prediction
+- Decision Tree Prediction
 
-\- Resume Summary
+- Resume Summary
 
-\- Resume Match Score
+- Resume Match Score
 
-\- Skill Gap Analysis
+- Skill Gap Analysis
 
-\- Interview Question Generation
+- Interview Question Generation
 
-\- HR Recommendation
+- HR Recommendation
 
-\- Email Draft Generation
+- Email Draft Generation
 
-\- Recruiter Dashboard
+- Recruiter Dashboard
 
-\- Analytics Dashboard
+- Analytics Dashboard
 
-\- Hiring Reports
+- Hiring Reports
 
-\- Admin Dashboard
+- Admin Dashboard
 
-\---
+------------------------------------------------------------------------------------------------------------------------------------
 
-\# Project Workflow
+Project Workflow:
 
 \`\`\`
 
@@ -118,69 +122,69 @@ Admin Dashboard
 
 \`\`\`
 
-\---
+------------------------------------------------------------------------------------------------------------------------------------
 
-\# Machine Learning Model
+Machine Learning Model:
 
-\*\*Algorithm Used\*\*
+Algorithm Used:
 
-\- Decision Tree Classifier
+- Decision Tree Classifier
 
-\*\*Other Models Compared\*\*
+Other Models Compared:
 
-\- Logistic Regression
+- Logistic Regression
 
-\- Decision Tree
+- Decision Tree
 
-\- Random Forest
+- Random Forest
 
-\- K-Nearest Neighbors (KNN)
+- K-Nearest Neighbors (KNN)
 
-\- Support Vector Machine (SVM)
+- Support Vector Machine (SVM)
 
-\*\*Best Performing Model\*\*
+Best Performing Model:
 
 Decision Tree Classifier
 
-\---
+------------------------------------------------------------------------------------------------------------------------------------
 
-\# Technology Stack
+Technology Stack:
 
-\## Frontend
+Frontend
 
-\- Streamlit
+- Streamlit
 
-\## Backend
+Backend
 
-\- FastAPI
+- FastAPI
 
-\## Machine Learning
+Machine Learning:
 
-\- Scikit-learn
+- Scikit-learn
 
-\- Joblib
+- Joblib
 
-\## Programming Language
+Programming Language:
 
-\- Python
+- Python
 
-\## Libraries
+Libraries:
 
-\- Pandas
+- Pandas
 
-\- NumPy
+- NumPy
 
-\- Matplotlib
+- Matplotlib
 
-\- pdfplumber
+- pdfplumber
 
-\- python-docx
+- python-docx
 
-\- Requests
+- Requests
 
-\---
+------------------------------------------------------------------------------------------------------------------------------------
 
-\# Project Structure
+Project Structure:
 
 \`\`\`
 
@@ -256,9 +260,9 @@ AI-Resume-Screening-Agent/
 
 \`\`\`
 
-\---
+------------------------------------------------------------------------------------------------------------------------------------
 
-\# Installation
+Installation:
 
 Clone the repository
 
@@ -328,170 +332,170 @@ http://localhost:8501
 
 \`\`\`
 
-\---
+------------------------------------------------------------------------------------------------------------------------------------
 
-\# Dataset
+Dataset:
 
-\- Resume Dataset
+- Resume Dataset
 
-\- Approximately 11,000 Resume Records
+- Approximately 11,000 Resume Records
 
-\---
+------------------------------------------------------------------------------------------------------------------------------------
 
-\# Application Modules
+Application Modules:
 
-\## Candidate Portal
+Candidate Portal
 
-\- Upload Resume
+- Upload Resume
 
-\- Resume Analysis
+- Resume Analysis
 
-\- Resume Summary
+- Resume Summary
 
-\- Match Score
+- Match Score
 
-\- Skill Gap Analysis
+- Skill Gap Analysis
 
-\- Interview Questions
+- Interview Questions
 
-\- HR Recommendation
+- HR Recommendation
 
-\- Email Draft
+- Email Draft
 
-\---
+------------------------------------------------------------------------------------------------------------------------------------
 
-\## Recruiter Dashboard
+Recruiter Dashboard:
 
-\- Candidate Details
+- Candidate Details
 
-\- Candidate Ranking
+- Candidate Ranking
 
-\- Prediction
+- Prediction
 
-\- Match Score
+- Match Score
 
-\- Resume Summary
+- Resume Summary
 
-\- Recruiter Actions
+- Recruiter Actions
 
-\---
+------------------------------------------------------------------------------------------------------------------------------------
 
-\## AI Resume Assistant
+AI Resume Assistant:
 
-\- Resume Summary
+- Resume Summary
 
-\- Match Score
+- Match Score
 
-\- Skill Gap Analysis
+- Skill Gap Analysis
 
-\- Interview Questions
+- Interview Questions
 
-\- HR Recommendation
+- HR Recommendation
 
-\- Email Draft
+- Email Draft
 
-\---
+------------------------------------------------------------------------------------------------------------------------------------
 
-\## Hiring Reports
+Hiring Reports:
 
-\- Candidate Report
+- Candidate Report
 
-\- Resume Summary
+- Resume Summary
 
-\- Final Hiring Decision
+- Final Hiring Decision
 
-\- Download CSV Report
+- Download CSV Report
 
-\---
+------------------------------------------------------------------------------------------------------------------------------------
 
-\## Analytics Dashboard
+Analytics Dashboard:
 
-\- Prediction Distribution
+- Prediction Distribution
 
-\- Match Score Chart
+- Match Score Chart
 
-\- Experience Chart
+- Experience Chart
 
-\- Skills Analysis
+- Skills Analysis
 
-\- Certification Analysis
+- Certification Analysis
 
-\---
+------------------------------------------------------------------------------------------------------------------------------------
 
-\## Admin Dashboard
+Admin Dashboard:
 
-\- Total Candidates
+- Total Candidates
 
-\- Recruiters
+- Recruiters
 
-\- Prediction Status
+- Prediction Status
 
-\- Match Score
+- Match Score
 
-\- Candidate Details
+- Candidate Details
 
-\- Hiring Status
+- Hiring Status
 
-\- System Status
+- System Status
 
-\---
+------------------------------------------------------------------------------------------------------------------------------------
 
-\# Results
+Results:
 
-\- Successfully uploads PDF and DOCX resumes.
+- Successfully uploads PDF and DOCX resumes.
 
-\- Extracts resume information automatically.
+- Extracts resume information automatically.
 
-\- Performs feature extraction.
+- Performs feature extraction.
 
-\- Predicts candidate selection using the Decision Tree model.
+- Predicts candidate selection using the Decision Tree model.
 
-\- Generates AI-powered resume summaries.
+- Generates AI-powered resume summaries.
 
-\- Calculates candidate match scores.
+- Calculates candidate match scores.
 
-\- Identifies missing skills.
+- Identifies missing skills.
 
-\- Generates interview questions.
+- Generates interview questions.
 
-\- Provides HR recommendations.
+- Provides HR recommendations.
 
-\- Creates downloadable hiring reports.
+- Creates downloadable hiring reports.
 
-\- Displays analytics through interactive dashboards.
+- Displays analytics through interactive dashboards.
 
-\---
+------------------------------------------------------------------------------------------------------------------------------------
 
-\# Future Enhancements
+Future Enhancements:
 
-\- MySQL/PostgreSQL Database Integration
+- MySQL/PostgreSQL Database Integration
 
-\- User Authentication (JWT)
+- User Authentication (JWT)
 
-\- Resume Search
+- Resume Search
 
-\- Multi-Candidate Ranking
+- Multi-Candidate Ranking
 
-\- PDF Report Generation
+- PDF Report Generation
 
-\- Email Integration
+- Email Integration
 
-\- Cloud Deployment
+- Cloud Deployment
 
-\- Large Language Model (LLM) Integration
+- Large Language Model (LLM) Integration
 
-\---
+------------------------------------------------------------------------------------------------------------------------------------
 
-\# Author
+Author:
 
-\*\*Your Name\*\*
+Matta Venkata Karthik
 
-Bachelor of Technology (Computer Science)
+🎓 B.Tech – Computer Science and Design (Data Science)
 
-AI Resume Screening Agent – Final Year Major Project
+🏫 College: NRI Institute Of Technology
 
-\---
+🔗 LinkedIn: https://www.linkedin.com/in/venkata-karthik-matta-b0536b321
 
-\# License
+🏫 College LinkedIn: https://www.linkedin.com/company/datascience-nriit
 
-This project is developed for educational and academic purposes.
+💻 GitHub: https://github.com/9154327992
