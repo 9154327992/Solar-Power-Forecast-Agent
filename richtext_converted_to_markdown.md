@@ -12,7 +12,7 @@ The project is developed using Python, FastAPI, Streamlit, and Scikit-learn with
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
-Features:
+***Features:***
 
 - Resume Upload (PDF & DOCX)
 
@@ -48,7 +48,7 @@ Features:
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
-Project Workflow:
+***Project Workflow:***
 
 Candidate
 
@@ -120,7 +120,7 @@ Admin Dashboard
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
-Machine Learning Model:
+***Machine Learning Model:***
 
 Algorithm Used:
 
@@ -144,7 +144,7 @@ Decision Tree Classifier
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
-Technology Stack:
+***Technology Stack:***
 
 Frontend
 
@@ -180,7 +180,7 @@ Libraries:
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
-Project Structure:
+***Project Structure:***
 
 AI-Resume-Screening-Agent/
 
@@ -254,7 +254,7 @@ AI-Resume-Screening-Agent/
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
-Installation:
+***Installation:***
 
 Clone the repository
 
@@ -262,11 +262,13 @@ bash
 
 git clone https://github.com/9154327992/AI-Resume-Screening-Agent
 
+
 Go to project directory
 
 bash
 
 cd AI-Resume-Screening-Agent
+
 
 Install dependencies
 
@@ -274,17 +276,20 @@ bash
 
 pip install -r requirements.txt
 
+
 ------------------------------------------------------------------------------------------------------------------------------------
 
-Run the Backend:
+***Run the Backend:***
 
 bash
 
 python -m uvicorn backend:app --reload
 
+
 Backend URL
 
 http://127.0.0.1:8000
+
 
 Swagger API Documentation
 
@@ -292,11 +297,12 @@ http://127.0.0.1:8000/docs
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
-Run the Frontend:
+***Run the Frontend:***
 
 bash
 
 python -m streamlit run frontend.py
+
 
 Frontend URL
 
@@ -304,7 +310,7 @@ http://localhost:8501
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
-Dataset:
+***Dataset:***
 
 - Resume Dataset
 
@@ -312,7 +318,7 @@ Dataset:
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
-Application Modules:
+***Application Modules:***
 
 Candidate Portal:
 
@@ -334,7 +340,7 @@ Candidate Portal:
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
-Recruiter Dashboard:
+***Recruiter Dashboard:***
 
 - Candidate Details
 
@@ -350,7 +356,7 @@ Recruiter Dashboard:
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
-AI Resume Assistant:
+***AI Resume Assistant:***
 
 - Resume Summary
 
@@ -366,7 +372,7 @@ AI Resume Assistant:
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
-Hiring Reports:
+***Hiring Reports:***
 
 - Candidate Report
 
@@ -378,7 +384,7 @@ Hiring Reports:
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
-Analytics Dashboard:
+***Analytics Dashboard:***
 
 - Prediction Distribution
 
@@ -392,7 +398,7 @@ Analytics Dashboard:
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
-Admin Dashboard:
+***Admin Dashboard:***
 
 - Total Candidates
 
@@ -410,7 +416,7 @@ Admin Dashboard:
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
-Results:
+***Results:***
 
 - Successfully uploads PDF and DOCX resumes.
 
@@ -436,7 +442,7 @@ Results:
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
-Future Enhancements:
+***Future Enhancements:***
 
 - MySQL/PostgreSQL Database Integration
 
@@ -456,7 +462,7 @@ Future Enhancements:
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
-Author:
+***Author:***
 
 Matta Venkata Karthik
 
