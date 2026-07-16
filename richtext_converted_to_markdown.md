@@ -50,8 +50,6 @@ Features:
 
 Project Workflow:
 
-\\\
-
 Candidate
 
 │
@@ -120,8 +118,6 @@ Hiring Reports
 
 Admin Dashboard
 
-\\\
-
 ------------------------------------------------------------------------------------------------------------------------------------
 
 Machine Learning Model:
@@ -185,8 +181,6 @@ Libraries:
 ------------------------------------------------------------------------------------------------------------------------------------
 
 Project Structure:
-
-\\\
 
 AI-Resume-Screening-Agent/
 
@@ -258,79 +252,55 @@ AI-Resume-Screening-Agent/
 
 └── .gitignore
 
-\\\
-
 ------------------------------------------------------------------------------------------------------------------------------------
 
 Installation:
 
 Clone the repository
 
-\\\bash
+bash
 
-git clone https://github.com/yourusername/AI-Resume-Screening-Agent.git
-
-\\\
+git clone https://github.com/9154327992/AI-Resume-Screening-Agent
 
 Go to project directory
 
-\\\bash
+bash
 
 cd AI-Resume-Screening-Agent
 
-\\\
-
 Install dependencies
 
-\\\bash
+bash
 
 pip install -r requirements.txt
-
-\\\
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
 Run the Backend:
 
-\\\bash
+bash
 
 python -m uvicorn backend:app --reload
 
-\\\
-
 Backend URL
-
-\\\
 
 http://127.0.0.1:8000
 
-\\\
-
 Swagger API Documentation
 
-\\\
-
 http://127.0.0.1:8000/docs
-
-\\\
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
 Run the Frontend:
 
-\\\bash
+bash
 
 python -m streamlit run frontend.py
 
-\\\
-
 Frontend URL
 
-\\\
-
 http://localhost:8501
-
-\\\
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
