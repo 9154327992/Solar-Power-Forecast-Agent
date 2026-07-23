@@ -7,7 +7,6 @@ joblib
 plotly
 matplotlib
 requests
-sqlite3
 python-dotenv
 streamlit-option-menu
 streamlit-extras
