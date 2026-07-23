@@ -1,12 +1,12 @@
+fastapi
+uvicorn
 streamlit
 pandas
 numpy
 scikit-learn
 xgboost
 joblib
-plotly
-matplotlib
 requests
+pydantic
 python-dotenv
-streamlit-option-menu
-streamlit-extras
+bcrypt
