@@ -1,0 +1,186 @@
+/* ==========================================================
+   Solar Power Forecast Agent
+   style.css
+========================================================== */
+
+/* -----------------------------
+   Main App
+------------------------------ */
+
+.stApp {
+    background: linear-gradient(135deg, #eef8f1, #f7fbff);
+    color: #1f2937;
+    font-family: "Segoe UI", sans-serif;
+}
+
+/* -----------------------------
+   Header
+------------------------------ */
+
+.main-title {
+    font-size: 42px;
+    font-weight: bold;
+    color: #0f766e;
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    font-size: 18px;
+    text-align: center;
+    color: #4b5563;
+    margin-bottom: 30px;
+}
+
+/* -----------------------------
+   Cards
+------------------------------ */
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 18px;
+    box-shadow: 0px 5px 15px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0px 10px 25px rgba(0,0,0,0.15);
+}
+
+/* -----------------------------
+   Metrics
+------------------------------ */
+
+.metric {
+    background: linear-gradient(135deg,#0f766e,#10b981);
+    color: white;
+    padding: 15px;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.metric h2 {
+    margin: 0;
+    font-size: 28px;
+}
+
+.metric p {
+    margin-top: 5px;
+}
+
+/* -----------------------------
+   Sidebar
+------------------------------ */
+
+section[data-testid="stSidebar"] {
+    background: #083344;
+    color: white;
+}
+
+section[data-testid="stSidebar"] * {
+    color: white;
+}
+
+/* -----------------------------
+   Buttons
+------------------------------ */
+
+.stButton > button {
+    width: 100%;
+    background: #16a34a;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.stButton > button:hover {
+    background: #15803d;
+    transform: scale(1.02);
+}
+
+/* -----------------------------
+   Input Boxes
+------------------------------ */
+
+.stTextInput input,
+.stNumberInput input,
+.stSelectbox div {
+    border-radius: 10px;
+}
+
+/* -----------------------------
+   Success Box
+------------------------------ */
+
+.success-box {
+    background: #dcfce7;
+    color: #166534;
+    padding: 18px;
+    border-left: 6px solid #16a34a;
+    border-radius: 12px;
+    margin-top: 15px;
+}
+
+/* -----------------------------
+   Warning Box
+------------------------------ */
+
+.warning-box {
+    background: #fff7ed;
+    color: #b45309;
+    padding: 18px;
+    border-left: 6px solid #f59e0b;
+    border-radius: 12px;
+    margin-top: 15px;
+}
+
+/* -----------------------------
+   Error Box
+------------------------------ */
+
+.error-box {
+    background: #fef2f2;
+    color: #b91c1c;
+    padding: 18px;
+    border-left: 6px solid #ef4444;
+    border-radius: 12px;
+    margin-top: 15px;
+}
+
+/* -----------------------------
+   Tables
+------------------------------ */
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th {
+    background: #0f766e;
+    color: white;
+    padding: 10px;
+}
+
+td {
+    padding: 10px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* -----------------------------
+   Footer
+------------------------------ */
+
+.footer {
+    text-align: center;
+    margin-top: 50px;
+    color: #6b7280;
+    font-size: 14px;
+}
