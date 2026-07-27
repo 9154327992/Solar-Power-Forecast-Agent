@@ -5,21 +5,46 @@ router = APIRouter()
 
 
 class PredictionRequest(BaseModel):
-    city: str
+    wind_speed: float
+    sunshine_duration: float
+    air_pressure: float
+    solar_radiation: float
+    air_temperature: float
+    relative_humidity: float
+    hour: int
+    day: int
+    month: int
 
 
 @router.get("/")
 def prediction_home():
-    return {"message": "Prediction API"}
+    return {
+        "message": "Prediction API is running"
+    }
 
 
-@router.post("/")
-def predict(request: PredictionRequest):
+@router.post("/forecast")
+def forecast(request: PredictionRequest):
+
+    # Replace this with your trained ML model
+    prediction = round(
+        request.solar_radiation * 0.015 +
+        request.sunshine_duration * 0.02,
+        2
+    )
+
+    if prediction >= 6:
+        level = "High"
+    elif prediction >= 3:
+        level = "Medium"
+    else:
+        level = "Low"
+
+    efficiency = round(min(prediction * 15, 100), 2)
 
     return {
-        "city": request.city,
-        "prediction": 0,
-        "level": "Unknown",
-        "efficiency": 0,
-        "recommendation": "Prediction module not connected."
+        "prediction": prediction,
+        "level": level,
+        "efficiency": efficiency,
+        "recommendation": "Good conditions for solar generation."
     }
