@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 router = APIRouter()
@@ -16,35 +16,42 @@ class PredictionRequest(BaseModel):
     month: int
 
 
+class PredictionResponse(BaseModel):
+    prediction: float
+    level: str
+    efficiency: float
+    recommendation: str
+
+
 @router.get("/")
 def prediction_home():
-    return {
-        "message": "Prediction API is running"
-    }
+    return {"message": "Prediction API is running"}
 
 
-@router.post("/forecast")
+@router.post("/forecast", response_model=PredictionResponse)
 def forecast(request: PredictionRequest):
+    try:
+        prediction = round(
+            request.solar_radiation * 0.015 +
+            request.sunshine_duration * 0.02,
+            2
+        )
 
-    # Replace this with your trained ML model
-    prediction = round(
-        request.solar_radiation * 0.015 +
-        request.sunshine_duration * 0.02,
-        2
-    )
+        if prediction >= 6:
+            level = "High"
+        elif prediction >= 3:
+            level = "Medium"
+        else:
+            level = "Low"
 
-    if prediction >= 6:
-        level = "High"
-    elif prediction >= 3:
-        level = "Medium"
-    else:
-        level = "Low"
+        efficiency = round(min(prediction * 15, 100), 2)
 
-    efficiency = round(min(prediction * 15, 100), 2)
+        return PredictionResponse(
+            prediction=prediction,
+            level=level,
+            efficiency=efficiency,
+            recommendation="Good conditions for solar generation."
+        )
 
-    return {
-        "prediction": prediction,
-        "level": level,
-        "efficiency": efficiency,
-        "recommendation": "Good conditions for solar generation."
-    }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
