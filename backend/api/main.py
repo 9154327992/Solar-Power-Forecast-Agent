@@ -11,6 +11,8 @@ from backend.api.routes import (
     recommendation,
     maintenance,
     battery,
+    admin,
+    assistant,
 )
 
 app = FastAPI(
@@ -110,6 +112,15 @@ app.include_router(
     tags=["Battery"]
 )
 
+app.include_router(
+    admin.router,
+    tags=["Admin"]
+)
+
+app.include_router(
+    assistant.router,
+    tags=["AI Assistant"]
+)
 
 # -------------------------
 # Startup Event
