@@ -9,7 +9,6 @@ class RecommendationRequest(BaseModel):
     battery_level: float
     weather: str
 
-
 @router.get("/")
 def recommendation_home():
     return {
