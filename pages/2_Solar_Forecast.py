@@ -127,21 +127,21 @@ if st.button(
 
             response = requests.post(
 
-                f"{API_URL}/forecast",
+                f"{API_URL}/api/predict/forecast",
 
                 json={
 
-                    "wind": wind,
+                    "wind_speed": wind,
 
-                    "sunshine": sunshine,
+                    "sunshine_duration": sunshine,
 
-                    "pressure": pressure,
+                    "air_pressure": pressure,
 
-                    "radiation": radiation,
+                    "solar_radiation": radiation,
 
-                    "temperature": temperature,
+                    "air_temperature": temperature,
 
-                    "humidity": humidity,
+                    "relative_humidity": humidity,
 
                     "hour": hour,
 
@@ -257,7 +257,7 @@ if st.button(
 
     st.subheader("💡 AI Insight")
 
-    st.success(result["insight"])
+    st.info("AI insight is currently unavailable.")
 
     st.divider()
 
