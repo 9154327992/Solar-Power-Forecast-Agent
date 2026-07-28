@@ -1,186 +1,403 @@
 /* ==========================================================
-   Solar Power Forecast Agent
-   style.css
+   SOLAR POWER FORECAST AGENT
+   Modern Light & Dark Theme
 ========================================================== */
 
-/* -----------------------------
-   Main App
------------------------------- */
+/* ---------- General ---------- */
 
+html,
+body,
 .stApp {
-    background: linear-gradient(135deg, #eef8f1, #f7fbff);
-    color: #1f2937;
     font-family: "Segoe UI", sans-serif;
+    transition: 0.3s ease;
 }
 
-/* -----------------------------
-   Header
------------------------------- */
+/* Main Container */
 
-.main-title {
-    font-size: 42px;
-    font-weight: bold;
-    color: #0f766e;
-    text-align: center;
-    margin-bottom: 5px;
+.main .block-container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    max-width: 1200px;
 }
 
-.subtitle {
-    font-size: 18px;
-    text-align: center;
-    color: #4b5563;
-    margin-bottom: 30px;
+/* Headings */
+
+h1 {
+    font-size: 2.6rem;
+    font-weight: 700;
+    margin-bottom: 10px;
 }
 
-/* -----------------------------
-   Cards
------------------------------- */
-
-.card {
-    background: white;
-    padding: 20px;
-    border-radius: 18px;
-    box-shadow: 0px 5px 15px rgba(0,0,0,0.08);
-    margin-bottom: 20px;
-    transition: 0.3s;
+h2 {
+    font-size: 1.9rem;
+    font-weight: 700;
 }
 
-.card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0px 10px 25px rgba(0,0,0,0.15);
+h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
 }
 
-/* -----------------------------
-   Metrics
------------------------------- */
+/* Divider */
 
-.metric {
-    background: linear-gradient(135deg,#0f766e,#10b981);
-    color: white;
-    padding: 15px;
-    border-radius: 15px;
-    text-align: center;
+hr {
+    margin: 25px 0;
 }
 
-.metric h2 {
-    margin: 0;
-    font-size: 28px;
-}
-
-.metric p {
-    margin-top: 5px;
-}
-
-/* -----------------------------
+/* ==========================================================
    Sidebar
------------------------------- */
+========================================================== */
 
-section[data-testid="stSidebar"] {
-    background: #083344;
-    color: white;
+[data-testid="stSidebar"] {
+    background: #0b2f40 !important;
 }
 
-section[data-testid="stSidebar"] * {
-    color: white;
+[data-testid="stSidebar"] * {
+    color: white !important;
 }
 
-/* -----------------------------
-   Buttons
------------------------------- */
-
-.stButton > button {
-    width: 100%;
-    background: #16a34a;
-    color: white;
-    border: none;
+[data-testid="stSidebarNav"] a {
     border-radius: 10px;
-    padding: 12px;
-    font-size: 16px;
-    font-weight: bold;
-    transition: 0.3s;
 }
 
-.stButton > button:hover {
-    background: #15803d;
-    transform: scale(1.02);
+[data-testid="stSidebarNav"] a:hover {
+    background: rgba(255,255,255,0.12);
 }
 
-/* -----------------------------
-   Input Boxes
------------------------------- */
+/* ==========================================================
+   Cards
+========================================================== */
+
+[data-testid="metric-container"] {
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.08);
+    transition: .3s;
+}
+
+[data-testid="metric-container"]:hover {
+    transform: translateY(-3px);
+}
+
+/* ==========================================================
+   Buttons
+========================================================== */
+
+.stButton>button {
+
+    width: 100%;
+
+    border-radius: 10px;
+
+    border: none;
+
+    padding: .7rem;
+
+    font-weight: 600;
+
+    transition: .3s;
+}
+
+.stButton>button:hover {
+    transform: translateY(-2px);
+}
+
+.stDownloadButton>button {
+
+    width: 100%;
+
+    border-radius: 10px;
+
+    font-weight: 600;
+
+    transition: .3s;
+}
+
+/* ==========================================================
+   Inputs
+========================================================== */
 
 .stTextInput input,
 .stNumberInput input,
-.stSelectbox div {
+textarea {
+
+    border-radius: 10px !important;
+}
+
+.stSelectbox div[data-baseweb="select"] {
+
     border-radius: 10px;
 }
 
-/* -----------------------------
-   Success Box
------------------------------- */
+.stDateInput input {
 
-.success-box {
-    background: #dcfce7;
-    color: #166534;
-    padding: 18px;
-    border-left: 6px solid #16a34a;
-    border-radius: 12px;
-    margin-top: 15px;
+    border-radius: 10px;
 }
 
-/* -----------------------------
-   Warning Box
------------------------------- */
-
-.warning-box {
-    background: #fff7ed;
-    color: #b45309;
-    padding: 18px;
-    border-left: 6px solid #f59e0b;
-    border-radius: 12px;
-    margin-top: 15px;
-}
-
-/* -----------------------------
-   Error Box
------------------------------- */
-
-.error-box {
-    background: #fef2f2;
-    color: #b91c1c;
-    padding: 18px;
-    border-left: 6px solid #ef4444;
-    border-radius: 12px;
-    margin-top: 15px;
-}
-
-/* -----------------------------
+/* ==========================================================
    Tables
------------------------------- */
+========================================================== */
 
 table {
-    border-collapse: collapse;
-    width: 100%;
+
+    border-radius: 10px;
+
+    overflow: hidden;
 }
 
-th {
-    background: #0f766e;
+/* ==========================================================
+   Alerts
+========================================================== */
+
+.stSuccess,
+.stWarning,
+.stInfo,
+.stError {
+
+    border-radius: 10px;
+}
+
+/* ==========================================================
+   LIGHT MODE
+========================================================== */
+
+@media (prefers-color-scheme: light) {
+
+html,
+body,
+.stApp {
+
+    background: #f5f7fa;
+
+    color: #1f2937;
+}
+
+.main .block-container {
+
+    background: white;
+
+    border-radius: 15px;
+
+    padding: 30px;
+}
+
+[data-testid="metric-container"] {
+
+    background: white;
+
+    border: 1px solid #e5e7eb;
+}
+
+[data-testid="stMetricValue"] {
+
+    color: #16a34a;
+
+    font-weight: bold;
+}
+
+.stButton>button {
+
+    background: #16a34a;
+
     color: white;
-    padding: 10px;
 }
 
-td {
-    padding: 10px;
-    border-bottom: 1px solid #e5e7eb;
+.stButton>button:hover {
+
+    background: #15803d;
 }
 
-/* -----------------------------
-   Footer
------------------------------- */
+.stDownloadButton>button {
 
-.footer {
-    text-align: center;
-    margin-top: 50px;
-    color: #6b7280;
-    font-size: 14px;
+    background: #2563eb;
+
+    color: white;
+}
+
+.stTextInput input,
+.stNumberInput input,
+textarea,
+.stSelectbox div[data-baseweb="select"] {
+
+    background: white;
+
+    color: black;
+
+    border: 1px solid #d1d5db;
+}
+
+.stSuccess {
+
+    background: #dcfce7;
+
+    color: #166534;
+}
+
+.stInfo {
+
+    background: #dbeafe;
+
+    color: #1d4ed8;
+}
+
+.stWarning {
+
+    background: #fef3c7;
+
+    color: #92400e;
+}
+
+.stError {
+
+    background: #fee2e2;
+
+    color: #b91c1c;
+}
+
+}
+
+/* ==========================================================
+   DARK MODE
+========================================================== */
+
+@media (prefers-color-scheme: dark) {
+
+html,
+body,
+.stApp {
+
+    background: #0f172a !important;
+
+    color: #f8fafc !important;
+}
+
+.main .block-container {
+
+    background: #0f172a !important;
+
+    color: white !important;
+
+    border-radius: 15px;
+
+    padding: 30px;
+}
+
+/* Headings */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+
+    color: white !important;
+}
+
+p,
+span,
+label {
+
+    color: #cbd5e1 !important;
+}
+
+/* Divider */
+
+hr {
+
+    border-color: #334155;
+}
+
+/* Cards */
+
+[data-testid="metric-container"] {
+
+    background: #1e293b !important;
+
+    border: 1px solid #334155;
+
+    box-shadow: none;
+}
+
+[data-testid="stMetricValue"] {
+
+    color: #22c55e !important;
+
+    font-weight: bold;
+}
+
+/* Buttons */
+
+.stButton>button {
+
+    background: #22c55e !important;
+
+    color: white !important;
+}
+
+.stButton>button:hover {
+
+    background: #16a34a !important;
+}
+
+.stDownloadButton>button {
+
+    background: #2563eb !important;
+
+    color: white !important;
+}
+
+/* Inputs */
+
+.stTextInput input,
+.stNumberInput input,
+textarea,
+.stSelectbox div[data-baseweb="select"] {
+
+    background: #1e293b !important;
+
+    color: white !important;
+
+    border: 1px solid #475569 !important;
+}
+
+/* Tables */
+
+table {
+
+    background: #1e293b !important;
+
+    color: white !important;
+}
+
+/* Alerts */
+
+.stSuccess {
+
+    background: #14532d !important;
+
+    color: #bbf7d0 !important;
+}
+
+.stInfo {
+
+    background: #1e3a8a !important;
+
+    color: #dbeafe !important;
+}
+
+.stWarning {
+
+    background: #78350f !important;
+
+    color: #fde68a !important;
+}
+
+.stError {
+
+    background: #7f1d1d !important;
+
+    color: #fecaca !important;
+}
+
 }
