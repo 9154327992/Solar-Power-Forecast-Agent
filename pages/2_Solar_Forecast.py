@@ -183,7 +183,7 @@ if st.button(
 
             "Predicted Power",
 
-            f"{result['prediction']/1000:.2f} kW"
+            f"{result['prediction']:.2f} kW"
 
         )
 
