@@ -47,7 +47,7 @@ st.divider()
 try:
 
     response = requests.get(
-        f"{API_URL}/history",
+        f"{API_URL}/api/history",
         timeout=20
     )
 
@@ -236,7 +236,7 @@ if confirm:
 
             response = requests.delete(
 
-                f"{API_URL}/history"
+                f"{API_URL}/api/history"
 
             )
 
