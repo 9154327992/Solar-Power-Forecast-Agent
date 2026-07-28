@@ -62,6 +62,12 @@ def forecast(request: PredictionRequest):
         except Exception:
             pass
 
+        prediction_history.append({
+            "predicted_power": prediction,
+            "generation_level": level,
+            "efficiency": efficiency,
+            "recommendation": "Good conditions for solar generation."
+        })
         return PredictionResponse(
             prediction=prediction,
             level=level,
