@@ -49,7 +49,7 @@ st.divider()
 try:
 
     response = requests.get(
-        f"{API_URL}/history",
+        f"{API_URL}/api/history",
         timeout=20
     )
 
@@ -73,7 +73,7 @@ if history.empty:
 # Data Preparation
 # ==========================================================
 
-history["predicted_power_kw"] = history["predicted_power"] / 1000
+history["predicted_power_kw"] = history["predicted_power"]
 
 history.index = range(1, len(history)+1)
 
