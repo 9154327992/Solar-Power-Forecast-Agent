@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+import requests
 
 router = APIRouter()
 
@@ -45,6 +46,21 @@ def forecast(request: PredictionRequest):
             level = "Low"
 
         efficiency = round(min(prediction * 15, 100), 2)
+
+        history = {
+            "predicted_power": prediction,
+            "generation_level": level,
+            "efficiency": efficiency
+        }
+
+        try:
+            requests.post(
+                "http://127.0.0.1:8000/api/history",
+                json=history,
+                timeout=2
+            )
+        except Exception:
+            pass
 
         return PredictionResponse(
             prediction=prediction,
