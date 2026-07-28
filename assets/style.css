@@ -1,403 +1,207 @@
 /* ==========================================================
    SOLAR POWER FORECAST AGENT
-   Modern Light & Dark Theme
+   Universal Style (Light & Dark Compatible)
 ========================================================== */
 
-/* ---------- General ---------- */
+/* ---------- Layout ---------- */
 
-html,
-body,
-.stApp {
-    font-family: "Segoe UI", sans-serif;
-    transition: 0.3s ease;
+.main .block-container{
+    max-width:1200px;
+    padding:2rem;
 }
 
-/* Main Container */
-
-.main .block-container {
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-    max-width: 1200px;
+h1{
+    font-size:2.6rem;
+    font-weight:700;
+    margin-bottom:.5rem;
 }
 
-/* Headings */
-
-h1 {
-    font-size: 2.6rem;
-    font-weight: 700;
-    margin-bottom: 10px;
+h2{
+    font-weight:700;
+    margin-top:1rem;
 }
 
-h2 {
-    font-size: 1.9rem;
-    font-weight: 700;
+h3{
+    font-weight:600;
 }
 
-h3 {
-    font-size: 1.5rem;
-    font-weight: 600;
+/* ---------- Sidebar ---------- */
+
+[data-testid="stSidebar"]{
+
+    background:#083344;
+
+    border-right:1px solid rgba(255,255,255,.08);
 }
 
-/* Divider */
+[data-testid="stSidebar"] *{
 
-hr {
-    margin: 25px 0;
+    color:white;
 }
 
-/* ==========================================================
-   Sidebar
-========================================================== */
+[data-testid="stSidebarNav"] a{
 
-[data-testid="stSidebar"] {
-    background: #0b2f40 !important;
+    border-radius:10px;
+
+    transition:.25s;
 }
 
-[data-testid="stSidebar"] * {
-    color: white !important;
+[data-testid="stSidebarNav"] a:hover{
+
+    background:rgba(255,255,255,.12);
 }
 
-[data-testid="stSidebarNav"] a {
-    border-radius: 10px;
+/* ---------- Metric Cards ---------- */
+
+[data-testid="metric-container"]{
+
+    border-radius:15px;
+
+    padding:18px;
+
+    border:1px solid rgba(120,120,120,.20);
+
+    backdrop-filter:blur(8px);
+
+    transition:.3s;
 }
 
-[data-testid="stSidebarNav"] a:hover {
-    background: rgba(255,255,255,0.12);
+[data-testid="metric-container"]:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:0 8px 20px rgba(0,0,0,.15);
 }
 
-/* ==========================================================
-   Cards
-========================================================== */
+/* ---------- Buttons ---------- */
 
-[data-testid="metric-container"] {
-    border-radius: 14px;
-    padding: 18px;
-    box-shadow: 0 4px 15px rgba(0,0,0,.08);
-    transition: .3s;
+.stButton>button{
+
+    width:100%;
+
+    border-radius:12px;
+
+    font-weight:600;
+
+    transition:.25s;
 }
 
-[data-testid="metric-container"]:hover {
-    transform: translateY(-3px);
+.stButton>button:hover{
+
+    transform:translateY(-2px);
 }
 
-/* ==========================================================
-   Buttons
-========================================================== */
+.stDownloadButton>button{
 
-.stButton>button {
+    width:100%;
 
-    width: 100%;
-
-    border-radius: 10px;
-
-    border: none;
-
-    padding: .7rem;
-
-    font-weight: 600;
-
-    transition: .3s;
+    border-radius:12px;
 }
 
-.stButton>button:hover {
-    transform: translateY(-2px);
-}
-
-.stDownloadButton>button {
-
-    width: 100%;
-
-    border-radius: 10px;
-
-    font-weight: 600;
-
-    transition: .3s;
-}
-
-/* ==========================================================
-   Inputs
-========================================================== */
+/* ---------- Inputs ---------- */
 
 .stTextInput input,
+
 .stNumberInput input,
-textarea {
 
-    border-radius: 10px !important;
+textarea{
+
+    border-radius:10px;
 }
 
-.stSelectbox div[data-baseweb="select"] {
+.stSelectbox div[data-baseweb="select"]{
 
-    border-radius: 10px;
+    border-radius:10px;
 }
 
-.stDateInput input {
+.stDateInput input{
 
-    border-radius: 10px;
+    border-radius:10px;
 }
 
-/* ==========================================================
-   Tables
-========================================================== */
+/* ---------- DataFrame ---------- */
 
-table {
+.stDataFrame{
 
-    border-radius: 10px;
+    border-radius:12px;
 
-    overflow: hidden;
+    overflow:hidden;
 }
 
-/* ==========================================================
-   Alerts
-========================================================== */
+/* ---------- Alerts ---------- */
 
 .stSuccess,
-.stWarning,
 .stInfo,
-.stError {
+.stWarning,
+.stError{
 
-    border-radius: 10px;
+    border-radius:10px;
 }
 
-/* ==========================================================
-   LIGHT MODE
-========================================================== */
+/* ---------- Horizontal Rule ---------- */
 
-@media (prefers-color-scheme: light) {
+hr{
 
-html,
-body,
-.stApp {
-
-    background: #f5f7fa;
-
-    color: #1f2937;
+    margin:28px 0;
 }
 
-.main .block-container {
+/* ---------- Plotly ---------- */
 
-    background: white;
+.js-plotly-plot{
 
-    border-radius: 15px;
+    border-radius:12px;
 
-    padding: 30px;
+    overflow:hidden;
 }
 
-[data-testid="metric-container"] {
+/* ---------- Expander ---------- */
 
-    background: white;
+.streamlit-expanderHeader{
 
-    border: 1px solid #e5e7eb;
+    font-weight:600;
 }
 
-[data-testid="stMetricValue"] {
+/* ---------- Checkboxes ---------- */
 
-    color: #16a34a;
+.stCheckbox{
 
-    font-weight: bold;
+    margin-top:5px;
 }
 
-.stButton>button {
+/* ---------- Footer ---------- */
 
-    background: #16a34a;
+footer{
 
-    color: white;
+    visibility:hidden;
 }
 
-.stButton>button:hover {
+/* ---------- Hide Streamlit Menu ---------- */
 
-    background: #15803d;
+#MainMenu{
+
+    visibility:hidden;
 }
 
-.stDownloadButton>button {
+header{
 
-    background: #2563eb;
-
-    color: white;
+    visibility:hidden;
 }
 
-.stTextInput input,
-.stNumberInput input,
-textarea,
-.stSelectbox div[data-baseweb="select"] {
+/* ---------- Nice Scrollbar ---------- */
 
-    background: white;
+::-webkit-scrollbar{
 
-    color: black;
-
-    border: 1px solid #d1d5db;
+    width:8px;
 }
 
-.stSuccess {
+::-webkit-scrollbar-thumb{
 
-    background: #dcfce7;
+    background:#94a3b8;
 
-    color: #166534;
+    border-radius:10px;
 }
 
-.stInfo {
+::-webkit-scrollbar-thumb:hover{
 
-    background: #dbeafe;
-
-    color: #1d4ed8;
-}
-
-.stWarning {
-
-    background: #fef3c7;
-
-    color: #92400e;
-}
-
-.stError {
-
-    background: #fee2e2;
-
-    color: #b91c1c;
-}
-
-}
-
-/* ==========================================================
-   DARK MODE
-========================================================== */
-
-@media (prefers-color-scheme: dark) {
-
-html,
-body,
-.stApp {
-
-    background: #0f172a !important;
-
-    color: #f8fafc !important;
-}
-
-.main .block-container {
-
-    background: #0f172a !important;
-
-    color: white !important;
-
-    border-radius: 15px;
-
-    padding: 30px;
-}
-
-/* Headings */
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-
-    color: white !important;
-}
-
-p,
-span,
-label {
-
-    color: #cbd5e1 !important;
-}
-
-/* Divider */
-
-hr {
-
-    border-color: #334155;
-}
-
-/* Cards */
-
-[data-testid="metric-container"] {
-
-    background: #1e293b !important;
-
-    border: 1px solid #334155;
-
-    box-shadow: none;
-}
-
-[data-testid="stMetricValue"] {
-
-    color: #22c55e !important;
-
-    font-weight: bold;
-}
-
-/* Buttons */
-
-.stButton>button {
-
-    background: #22c55e !important;
-
-    color: white !important;
-}
-
-.stButton>button:hover {
-
-    background: #16a34a !important;
-}
-
-.stDownloadButton>button {
-
-    background: #2563eb !important;
-
-    color: white !important;
-}
-
-/* Inputs */
-
-.stTextInput input,
-.stNumberInput input,
-textarea,
-.stSelectbox div[data-baseweb="select"] {
-
-    background: #1e293b !important;
-
-    color: white !important;
-
-    border: 1px solid #475569 !important;
-}
-
-/* Tables */
-
-table {
-
-    background: #1e293b !important;
-
-    color: white !important;
-}
-
-/* Alerts */
-
-.stSuccess {
-
-    background: #14532d !important;
-
-    color: #bbf7d0 !important;
-}
-
-.stInfo {
-
-    background: #1e3a8a !important;
-
-    color: #dbeafe !important;
-}
-
-.stWarning {
-
-    background: #78350f !important;
-
-    color: #fde68a !important;
-}
-
-.stError {
-
-    background: #7f1d1d !important;
-
-    color: #fecaca !important;
-}
-
+    background:#64748b;
 }
