@@ -18,12 +18,17 @@ def ai_assistant(request: AssistantRequest):
             "(10 AM–3 PM) to maximize stored energy."
         )
 
-    elif "forecast" in question:
+    elif (
+        "forecast" in question
+        or "solar generation" in question
+        or "high today" in question
+    ):
         answer = (
-            "Solar generation depends on solar radiation, sunshine "
-            "duration, cloud cover, temperature, and weather conditions."
+            "If solar radiation is high and cloud cover is low, "
+            "solar generation is expected to be high today. "
+            "Use battery charging and heavy appliances during "
+            "peak sunlight hours (10 AM–3 PM)."
         )
-
     elif "heavy" in question:
         answer = (
             "Run heavy appliances like washing machines, water pumps, "
