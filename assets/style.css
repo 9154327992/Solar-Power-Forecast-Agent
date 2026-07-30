@@ -175,17 +175,6 @@ footer{
     visibility:hidden;
 }
 
-/* ---------- Hide Streamlit Menu ---------- */
-
-#MainMenu{
-
-    visibility:hidden;
-}
-
-header{
-
-    visibility:hidden;
-}
 
 /* ---------- Nice Scrollbar ---------- */
 
