@@ -47,10 +47,7 @@ st.divider()
 banner = Path("assets/banner.jpg")
 
 if banner.exists():
-    left, center, right = st.columns([1, 6, 1])
-
-    with center:
-        st.image(str(banner), use_container_width=True)
+    st.image(str(banner), width=1200)
 
 st.divider()
 
