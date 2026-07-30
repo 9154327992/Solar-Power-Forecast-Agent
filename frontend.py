@@ -29,6 +29,8 @@ if css_file.exists():
 # Sidebar
 # ---------------------------------------------------
 
+st.sidebar.image("assets/logo.png", width=120)
+
 st.sidebar.title("Solar Power Forecast Agent")
 
 st.sidebar.markdown("---")
@@ -54,8 +56,6 @@ st.sidebar.write("Framework: Streamlit")
 # ---------------------------------------------------
 # Main Home Screen
 # ---------------------------------------------------
-
-st.image("assets/banner.jpg", use_container_width=True)
 
 st.title("☀ Solar Power Forecast Agent")
 
