@@ -54,26 +54,6 @@ st.write(
 st.divider()
 
 # ==========================================================
-# Appearance
-# ==========================================================
-
-st.subheader("🎨 Appearance")
-
-theme = st.selectbox(
-    "Application Theme",
-    ["Light", "Dark", "System"],
-    index=["Light", "Dark", "System"].index(st.session_state.theme)
-)
-
-units = st.selectbox(
-    "Measurement Units",
-    ["Metric", "Imperial"],
-    index=["Metric", "Imperial"].index(st.session_state.units)
-)
-
-st.divider()
-
-# ==========================================================
 # Notifications
 # ==========================================================
 
