@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 import requests
 import re
-from typing import Any, Optional
+from typing import Optional, Any
 
 router = APIRouter()
 
@@ -12,7 +12,6 @@ router = APIRouter()
 # ==========================================================
 
 API_BASE_URL = "https://solar-power-forecast-agent.onrender.com"
-
 REQUEST_TIMEOUT = 10
 
 
@@ -25,29 +24,34 @@ class AssistantRequest(BaseModel):
 
 
 # ==========================================================
-# Utility Functions
+# Text Utilities
 # ==========================================================
 
 def clean_text(text: str) -> str:
-    """Normalize user input."""
+    """Normalize the user's question."""
     text = text.lower().strip()
     text = re.sub(r"\s+", " ", text)
     return text
 
 
-def contains_any(text: str, words: list[str]) -> bool:
-    """Check whether any complete word/phrase exists."""
-    return any(
-        re.search(rf"\b{re.escape(word)}\b", text)
-        for word in words
-    )
+def contains_any(text: str, phrases: list[str]) -> bool:
+    """
+    Detect complete words or phrases without substring mistakes.
+
+    This prevents:
+        'hi' from matching 'high'
+    """
+    for phrase in phrases:
+        pattern = rf"\b{re.escape(phrase.lower())}\b"
+
+        if re.search(pattern, text):
+            return True
+
+    return False
 
 
 def is_greeting(text: str) -> bool:
-    """
-    Prevent the 'hi' inside 'high' bug.
-    """
-    text = text.strip()
+    """Detect greetings without confusing 'high' with 'hi'."""
 
     greetings = {
         "hi",
@@ -75,18 +79,15 @@ def is_greeting(text: str) -> bool:
 
 
 # ==========================================================
-# Backend Data Helpers
+# Backend Data
 # ==========================================================
 
-def get_history() -> Optional[Any]:
-    """
-    Try to retrieve prediction history from the backend.
-    Returns None if the endpoint is unavailable.
-    """
+def safe_get(url: str) -> Optional[Any]:
+    """Safely request JSON data from the backend."""
 
     try:
         response = requests.get(
-            f"{API_BASE_URL}/api/history",
+            url,
             timeout=REQUEST_TIMEOUT
         )
 
@@ -99,48 +100,39 @@ def get_history() -> Optional[Any]:
     return None
 
 
+def get_history() -> Optional[Any]:
+    return safe_get(
+        f"{API_BASE_URL}/api/history"
+    )
+
+
 def get_weather() -> Optional[Any]:
     """
-    Try to retrieve live weather from the backend.
-
-    The weather router may have different response structures,
-    so this function safely handles unavailable data.
+    Try the available weather endpoints.
     """
 
-    possible_urls = [
+    urls = [
         f"{API_BASE_URL}/api/weather",
         f"{API_BASE_URL}/api/weather/current",
     ]
 
-    for url in possible_urls:
+    for url in urls:
 
-        try:
-            response = requests.get(
-                url,
-                timeout=REQUEST_TIMEOUT
-            )
+        data = safe_get(url)
 
-            if response.status_code == 200:
-                return response.json()
-
-        except Exception:
-            continue
+        if data is not None:
+            return data
 
     return None
 
 
-def extract_latest_prediction(history: Any) -> Optional[float]:
-    """
-    Extract the latest prediction from several possible
-    history response formats.
-    """
+def extract_records(data: Any) -> list:
+    """Extract list records from common API response formats."""
 
-    if history is None:
-        return None
+    if isinstance(data, list):
+        return data
 
-    records = history
-
-    if isinstance(history, dict):
+    if isinstance(data, dict):
 
         for key in [
             "history",
@@ -149,37 +141,48 @@ def extract_latest_prediction(history: Any) -> Optional[float]:
             "predictions",
             "results"
         ]:
-            if key in history:
-                records = history[key]
-                break
 
-    if not isinstance(records, list):
-        return None
+            value = data.get(key)
+
+            if isinstance(value, list):
+                return value
+
+    return []
+
+
+def extract_prediction(history: Any) -> Optional[float]:
+    """Extract latest prediction."""
+
+    records = extract_records(history)
 
     if not records:
         return None
 
     latest = records[-1]
 
-    if isinstance(latest, dict):
+    if not isinstance(latest, dict):
+        return None
 
-        for key in [
-            "prediction",
-            "predicted_power",
-            "solar_power",
-            "power",
-            "value"
-        ]:
+    possible_keys = [
+        "prediction",
+        "predicted_power",
+        "solar_power",
+        "power",
+        "value"
+    ]
 
-            value = latest.get(key)
+    for key in possible_keys:
 
-            if value is not None:
+        value = latest.get(key)
 
-                try:
-                    return float(value)
+        if value is None:
+            continue
 
-                except (ValueError, TypeError):
-                    pass
+        try:
+            return float(value)
+
+        except (TypeError, ValueError):
+            continue
 
     return None
 
@@ -188,9 +191,7 @@ def extract_weather_value(
     weather: Any,
     keys: list[str]
 ) -> Optional[Any]:
-    """
-    Find a weather value from common response structures.
-    """
+    """Extract weather values from common response structures."""
 
     if weather is None:
         return None
@@ -198,14 +199,16 @@ def extract_weather_value(
     objects = []
 
     if isinstance(weather, dict):
+
         objects.append(weather)
 
         for key in [
             "weather",
-            "data",
             "current",
+            "data",
             "result"
         ]:
+
             value = weather.get(key)
 
             if isinstance(value, dict):
@@ -221,84 +224,92 @@ def extract_weather_value(
     return None
 
 
-# ==========================================================
-# Data Summary
-# ==========================================================
-
 def get_current_data() -> dict:
-    """
-    Collect whatever current information is available
-    from the existing backend.
-    """
+    """Collect available prediction and weather information."""
 
     history = get_history()
     weather = get_weather()
 
-    prediction = extract_latest_prediction(history)
-
-    temperature = extract_weather_value(
-        weather,
-        [
-            "temperature",
-            "temp",
-            "air_temperature"
-        ]
-    )
-
-    humidity = extract_weather_value(
-        weather,
-        [
-            "humidity",
-            "relative_humidity"
-        ]
-    )
-
-    pressure = extract_weather_value(
-        weather,
-        [
-            "pressure",
-            "air_pressure"
-        ]
-    )
-
-    wind = extract_weather_value(
-        weather,
-        [
-            "wind_speed",
-            "wind"
-        ]
-    )
-
-    clouds = extract_weather_value(
-        weather,
-        [
-            "cloud_cover",
-            "clouds",
-            "cloud"
-        ]
-    )
-
-    radiation = extract_weather_value(
-        weather,
-        [
-            "solar_radiation",
-            "radiation"
-        ]
-    )
-
     return {
-        "prediction": prediction,
-        "temperature": temperature,
-        "humidity": humidity,
-        "pressure": pressure,
-        "wind": wind,
-        "clouds": clouds,
-        "radiation": radiation,
+        "prediction": extract_prediction(history),
+
+        "temperature": extract_weather_value(
+            weather,
+            [
+                "temperature",
+                "temp",
+                "air_temperature"
+            ]
+        ),
+
+        "humidity": extract_weather_value(
+            weather,
+            [
+                "humidity",
+                "relative_humidity"
+            ]
+        ),
+
+        "pressure": extract_weather_value(
+            weather,
+            [
+                "pressure",
+                "air_pressure"
+            ]
+        ),
+
+        "wind": extract_weather_value(
+            weather,
+            [
+                "wind_speed",
+                "wind"
+            ]
+        ),
+
+        "clouds": extract_weather_value(
+            weather,
+            [
+                "cloud_cover",
+                "clouds",
+                "cloud"
+            ]
+        ),
+
+        "radiation": extract_weather_value(
+            weather,
+            [
+                "solar_radiation",
+                "radiation"
+            ]
+        ),
+
+        "sunshine": extract_weather_value(
+            weather,
+            [
+                "sunshine_duration",
+                "sunshine"
+            ]
+        )
     }
 
 
 # ==========================================================
-# Forecast Response
+# Prediction Level
+# ==========================================================
+
+def prediction_level(value: float) -> str:
+
+    if value >= 6:
+        return "High"
+
+    if value >= 3:
+        return "Moderate"
+
+    return "Low"
+
+
+# ==========================================================
+# Forecast Answer
 # ==========================================================
 
 def forecast_answer(data: dict) -> str:
@@ -307,147 +318,502 @@ def forecast_answer(data: dict) -> str:
     temperature = data.get("temperature")
     clouds = data.get("clouds")
     radiation = data.get("radiation")
+    sunshine = data.get("sunshine")
 
-    parts = []
+    response = "☀️ **Solar Generation Forecast**\n\n"
 
     if prediction is not None:
 
-        if prediction >= 6:
-            level = "high"
-        elif prediction >= 3:
-            level = "moderate"
-        else:
-            level = "low"
+        level = prediction_level(prediction)
 
-        parts.append(
-            f"☀️ **Current solar prediction: {prediction:.2f} kW ({level.title()})**."
+        response += (
+            f"**Latest available prediction:** "
+            f"{prediction:.2f} kW ({level})\n\n"
         )
 
-    if temperature is not None:
-        parts.append(f"🌡️ Temperature: {temperature}")
+    else:
 
-    if clouds is not None:
-        parts.append(f"☁️ Cloud cover: {clouds}")
+        response += (
+            "The current solar prediction is not available "
+            "from the backend right now.\n\n"
+        )
 
     if radiation is not None:
-        parts.append(f"☀️ Solar radiation: {radiation}")
+        response += f"☀️ Solar radiation: **{radiation}**\n\n"
 
-    if parts:
+    if sunshine is not None:
+        response += f"🌞 Sunshine duration: **{sunshine}**\n\n"
 
-        return (
-            "\n\n".join(parts)
-            + "\n\n"
-            "Higher solar radiation and longer sunshine duration "
-            "generally support stronger solar generation."
-        )
+    if clouds is not None:
+        response += f"☁️ Cloud cover: **{clouds}**\n\n"
 
-    return (
-        "☀️ **Solar Generation Forecast**\n\n"
-        "Solar generation depends mainly on solar radiation, "
+    if temperature is not None:
+        response += f"🌡️ Temperature: **{temperature}**\n\n"
+
+    response += (
+        "Solar generation is influenced by solar radiation, "
         "sunshine duration, cloud conditions, temperature, "
         "humidity, wind, and time of day.\n\n"
-        "The application uses an XGBoost forecasting model "
+        "The application uses an **XGBoost forecasting model** "
         "to estimate solar power generation."
     )
 
+    return response
+
 
 # ==========================================================
-# Weather Response
+# Weather Answer
 # ==========================================================
 
 def weather_answer(data: dict) -> str:
 
-    temperature = data.get("temperature")
-    humidity = data.get("humidity")
-    pressure = data.get("pressure")
-    wind = data.get("wind")
-    clouds = data.get("clouds")
-    radiation = data.get("radiation")
+    response = "🌤️ **Current Weather Information**\n\n"
 
-    values = []
+    found = False
 
-    if temperature is not None:
-        values.append(f"🌡️ Temperature: **{temperature}**")
+    values = [
+        ("🌡️ Temperature", data.get("temperature")),
+        ("💧 Humidity", data.get("humidity")),
+        ("🧭 Pressure", data.get("pressure")),
+        ("💨 Wind", data.get("wind")),
+        ("☁️ Cloud cover", data.get("clouds")),
+        ("☀️ Solar radiation", data.get("radiation")),
+    ]
 
-    if humidity is not None:
-        values.append(f"💧 Humidity: **{humidity}**")
+    for label, value in values:
 
-    if pressure is not None:
-        values.append(f"🧭 Pressure: **{pressure}**")
+        if value is not None:
 
-    if wind is not None:
-        values.append(f"💨 Wind: **{wind}**")
+            response += f"{label}: **{value}**\n\n"
+            found = True
 
-    if clouds is not None:
-        values.append(f"☁️ Cloud cover: **{clouds}**")
-
-    if radiation is not None:
-        values.append(f"☀️ Solar radiation: **{radiation}**")
-
-    if values:
+    if not found:
 
         return (
-            "🌤️ **Current Weather Information**\n\n"
-            + "\n".join(values)
-            + "\n\n"
-            "These conditions can influence solar generation."
+            "🌤️ I couldn't retrieve the current weather "
+            "data from the backend right now.\n\n"
+            "Please check the **Live Weather** page for "
+            "the latest weather information."
+        )
+
+    response += (
+        "These weather conditions can directly affect "
+        "solar power generation."
+    )
+
+    return response
+
+
+# ==========================================================
+# Battery Answer
+# ==========================================================
+
+def battery_answer(data: dict) -> str:
+
+    prediction = data.get("prediction")
+
+    if prediction is not None:
+
+        level = prediction_level(prediction)
+
+        if level == "High":
+
+            return (
+                "🔋 **Battery Recommendation**\n\n"
+                f"The latest available solar prediction is "
+                f"**{prediction:.2f} kW ({level})**.\n\n"
+                "This indicates strong generation conditions. "
+                "If your battery needs charging, this can be "
+                "a suitable period to prioritize charging.\n\n"
+                "For this application, the suggested daytime "
+                "window is approximately **10 AM–3 PM**."
+            )
+
+        if level == "Moderate":
+
+            return (
+                "🔋 **Battery Recommendation**\n\n"
+                f"The latest available solar prediction is "
+                f"**{prediction:.2f} kW ({level})**.\n\n"
+                "Battery charging may be reasonable, but "
+                "available solar generation should be monitored."
+            )
+
+        return (
+            "🔋 **Battery Recommendation**\n\n"
+            f"The latest available solar prediction is "
+            f"**{prediction:.2f} kW ({level})**.\n\n"
+            "Solar generation is currently relatively low. "
+            "If possible, consider waiting for stronger "
+            "generation before prioritizing battery charging."
         )
 
     return (
-        "🌤️ I couldn't retrieve the current weather data "
-        "from the backend right now.\n\n"
-        "Please open the **Live Weather** page to check the "
-        "latest available weather information."
+        "🔋 **Battery Recommendation**\n\n"
+        "Battery charging is generally most effective when "
+        "solar generation is strong.\n\n"
+        "For this application, the suggested daytime window "
+        "is approximately **10 AM–3 PM**.\n\n"
+        "The current prediction is unavailable, so check the "
+        "**Solar Forecast** page for the latest value."
     )
 
 
 # ==========================================================
-# Main AI Logic
+# Appliance Answer
+# ==========================================================
+
+def appliance_answer(data: dict) -> str:
+
+    prediction = data.get("prediction")
+
+    if prediction is not None:
+
+        level = prediction_level(prediction)
+
+        if level == "High":
+
+            return (
+                "⚡ **Appliance Recommendation**\n\n"
+                f"The latest solar prediction is "
+                f"**{prediction:.2f} kW ({level})**.\n\n"
+                "This indicates favorable generation conditions "
+                "for flexible high-power appliances such as "
+                "washing machines, water pumps, and EV charging.\n\n"
+                "If possible, use these appliances while solar "
+                "generation is strong."
+            )
+
+        return (
+            "⚡ **Appliance Recommendation**\n\n"
+            f"The latest solar prediction is "
+            f"**{prediction:.2f} kW ({level})**.\n\n"
+            "Consider delaying flexible high-power appliances "
+            "until solar generation becomes stronger."
+        )
+
+    return (
+        "⚡ **Appliance Scheduling**\n\n"
+        "High-power appliances such as washing machines, "
+        "water pumps, and EV chargers are generally better "
+        "scheduled during strong solar generation.\n\n"
+        "For this application, the suggested daytime window "
+        "is approximately **10 AM–3 PM**."
+    )
+
+
+# ==========================================================
+# Energy Saving
+# ==========================================================
+
+def energy_saving_answer() -> str:
+
+    return (
+        "💡 **Energy-Saving Recommendations**\n\n"
+        "1. Use high-power appliances when solar generation "
+        "is strong.\n\n"
+        "2. Reduce unnecessary standby power consumption.\n\n"
+        "3. Use stored battery energy when solar generation "
+        "is low.\n\n"
+        "4. Keep solar panels clean and free from unnecessary "
+        "obstructions.\n\n"
+        "5. Monitor your historical solar generation.\n\n"
+        "6. Shift flexible electricity consumption toward "
+        "strong daytime solar production.\n\n"
+        "7. Avoid using several high-power appliances "
+        "simultaneously when solar generation is low."
+    )
+
+
+# ==========================================================
+# Maintenance
+# ==========================================================
+
+def maintenance_answer() -> str:
+
+    return (
+        "🔧 **Solar Panel Maintenance**\n\n"
+        "Regular maintenance helps keep a solar system "
+        "operating effectively.\n\n"
+        "• Keep panels reasonably clean.\n"
+        "• Remove dust, leaves, and visible obstructions.\n"
+        "• Check for unnecessary shading.\n"
+        "• Monitor changes in solar generation.\n"
+        "• Look for unusual drops in output.\n"
+        "• Check the system for visible damage.\n\n"
+        "For electrical or physical faults, use qualified "
+        "professional inspection."
+    )
+
+
+# ==========================================================
+# ML Answer
+# ==========================================================
+
+def ml_answer() -> str:
+
+    return (
+        "🤖 **Machine Learning Model**\n\n"
+        "The Solar Power Forecast Agent uses an "
+        "**XGBoost Regressor** for solar power forecasting.\n\n"
+        "The forecasting features include:\n\n"
+        "• Wind speed\n"
+        "• Sunshine duration\n"
+        "• Air pressure\n"
+        "• Solar radiation\n"
+        "• Air temperature\n"
+        "• Relative humidity\n"
+        "• Hour\n"
+        "• Day\n"
+        "• Month\n\n"
+        "The model learns relationships between these "
+        "weather/time features and solar power generation "
+        "to produce a forecast."
+    )
+
+
+# ==========================================================
+# Solar Panel Efficiency
+# ==========================================================
+
+def efficiency_answer() -> str:
+
+    return (
+        "⚡ **Solar Panel Efficiency**\n\n"
+        "Solar panel performance can be affected by several "
+        "conditions:\n\n"
+        "☀️ **Solar radiation:** More available sunlight "
+        "generally provides more energy.\n\n"
+        "🌡️ **Temperature:** Panel electrical performance "
+        "can change as temperature increases.\n\n"
+        "☁️ **Cloud cover:** Clouds reduce the sunlight "
+        "reaching the panels.\n\n"
+        "🧹 **Dust and dirt:** Surface contamination can "
+        "reduce the available sunlight.\n\n"
+        "🌳 **Shading:** Trees, buildings, and other "
+        "obstructions can reduce output.\n\n"
+        "Regular monitoring can help identify unusual "
+        "performance changes."
+    )
+
+
+# ==========================================================
+# Cloudy Weather
+# ==========================================================
+
+def cloudy_answer() -> str:
+
+    return (
+        "☁️ **Cloudy Weather and Solar Generation**\n\n"
+        "Cloud cover generally reduces the amount of direct "
+        "sunlight reaching solar panels.\n\n"
+        "Solar panels can still generate electricity under "
+        "cloudy conditions because some diffuse sunlight "
+        "reaches the panels, but output is usually lower "
+        "than under strong clear-sky conditions."
+    )
+
+
+# ==========================================================
+# Solar Radiation
+# ==========================================================
+
+def radiation_answer() -> str:
+
+    return (
+        "☀️ **Solar Radiation**\n\n"
+        "Solar radiation is the sunlight energy reaching "
+        "the Earth's surface and is an important factor "
+        "in solar power generation.\n\n"
+        "Higher available solar radiation generally provides "
+        "better conditions for photovoltaic electricity "
+        "generation.\n\n"
+        "Your forecasting system uses solar radiation as "
+        "one of its model features."
+    )
+
+
+# ==========================================================
+# Humidity
+# ==========================================================
+
+def humidity_answer() -> str:
+
+    return (
+        "💧 **Humidity and Solar Generation**\n\n"
+        "Humidity describes the amount of water vapor in "
+        "the atmosphere.\n\n"
+        "It can be useful as a weather feature because "
+        "atmospheric conditions often occur together with "
+        "clouds, haze, and other factors that influence "
+        "the sunlight reaching solar panels.\n\n"
+        "Your XGBoost model uses relative humidity as one "
+        "of its forecasting features."
+    )
+
+
+# ==========================================================
+# Temperature
+# ==========================================================
+
+def temperature_answer() -> str:
+
+    return (
+        "🌡️ **Temperature and Solar Panels**\n\n"
+        "Temperature is one of the weather variables used "
+        "by your forecasting model.\n\n"
+        "Solar panel electrical characteristics can change "
+        "with temperature, so temperature can be useful "
+        "when estimating solar generation.\n\n"
+        "The model combines temperature with other features "
+        "rather than relying on temperature alone."
+    )
+
+
+# ==========================================================
+# General Solar Answer
+# ==========================================================
+
+def solar_answer() -> str:
+
+    return (
+        "☀️ **Solar Energy**\n\n"
+        "Solar photovoltaic systems convert sunlight into "
+        "electrical energy.\n\n"
+        "Solar generation varies according to conditions "
+        "such as:\n\n"
+        "• Solar radiation\n"
+        "• Sunshine duration\n"
+        "• Cloud cover\n"
+        "• Temperature\n"
+        "• Humidity\n"
+        "• Wind conditions\n"
+        "• Time of day\n\n"
+        "Your Solar Power Forecast Agent uses these types "
+        "of weather and time features with an XGBoost "
+        "model to estimate solar power generation."
+    )
+
+
+# ==========================================================
+# Project Answer
+# ==========================================================
+
+def project_answer() -> str:
+
+    return (
+        "☀️ **Solar Power Forecast Agent**\n\n"
+        "This application is designed to forecast solar "
+        "power generation and provide energy recommendations.\n\n"
+        "**Main features:**\n\n"
+        "• Solar power forecasting\n"
+        "• Live weather integration\n"
+        "• AI Energy Assistant\n"
+        "• Prediction history\n"
+        "• Analytics dashboard\n"
+        "• Battery recommendations\n"
+        "• Appliance scheduling\n"
+        "• Energy-saving advice\n"
+        "• Solar panel maintenance guidance\n"
+        "• Daily reports\n"
+        "• Admin dashboard\n\n"
+        "The forecasting model uses XGBoost."
+    )
+
+
+# ==========================================================
+# Daily Report
+# ==========================================================
+
+def daily_report_answer(data: dict) -> str:
+
+    prediction = data.get("prediction")
+    temperature = data.get("temperature")
+    humidity = data.get("humidity")
+    clouds = data.get("clouds")
+    radiation = data.get("radiation")
+
+    response = "📊 **Daily Solar Energy Report**\n\n"
+
+    if prediction is not None:
+
+        level = prediction_level(prediction)
+
+        response += (
+            f"☀️ **Solar Prediction:** "
+            f"{prediction:.2f} kW ({level})\n\n"
+        )
+
+    else:
+
+        response += (
+            "☀️ **Solar Prediction:** "
+            "Current prediction unavailable\n\n"
+        )
+
+    if temperature is not None:
+        response += f"🌡️ **Temperature:** {temperature}\n\n"
+
+    if humidity is not None:
+        response += f"💧 **Humidity:** {humidity}\n\n"
+
+    if clouds is not None:
+        response += f"☁️ **Cloud Cover:** {clouds}\n\n"
+
+    if radiation is not None:
+        response += f"☀️ **Solar Radiation:** {radiation}\n\n"
+
+    response += (
+        "🔋 **Battery:** Prioritize charging when solar "
+        "generation is strong.\n\n"
+        "⚡ **Appliances:** Schedule flexible high-power "
+        "loads during stronger daytime generation.\n\n"
+        "💡 **Energy Saving:** Reduce standby consumption "
+        "and maximize direct solar usage."
+    )
+
+    return response
+
+
+# ==========================================================
+# Main Assistant
 # ==========================================================
 
 def generate_answer(question: str) -> str:
 
     q = clean_text(question)
 
-    # ======================================================
+    # ------------------------------------------------------
     # Greeting
-    # ======================================================
+    # ------------------------------------------------------
 
     if is_greeting(q):
 
         return (
             "Hello! ☀️ I'm your Solar Energy Assistant.\n\n"
-            "I can help you with:\n"
-            "• Solar generation forecasts\n"
-            "• Live weather\n"
-            "• Battery charging\n"
-            "• Appliance scheduling\n"
-            "• Energy saving\n"
-            "• Solar panel maintenance\n"
-            "• XGBoost and machine learning\n"
-            "• Daily energy reports\n\n"
-            "What would you like to know?"
+            "You can ask me any question about solar energy, "
+            "weather, batteries, appliances, maintenance, "
+            "energy saving, or the forecasting model.\n\n"
+            "You are not limited to the quick questions above."
         )
 
-    # ======================================================
+    # ------------------------------------------------------
     # Thanks
-    # ======================================================
+    # ------------------------------------------------------
 
     if contains_any(
         q,
-        ["thank you", "thanks", "thank"]
+        ["thank", "thanks", "thank you"]
     ):
 
         return (
             "You're welcome! ☀️\n\n"
-            "I'm here whenever you need help with "
-            "solar forecasting, weather, batteries, "
-            "or energy optimization."
+            "Feel free to ask another solar or energy question."
         )
 
-    # ======================================================
-    # ML Model
-    # ======================================================
+    # ------------------------------------------------------
+    # ML / XGBoost
+    # ------------------------------------------------------
 
     if contains_any(
         q,
@@ -456,34 +822,95 @@ def generate_answer(question: str) -> str:
             "machine learning",
             "ml model",
             "machine model",
-            "algorithm",
             "model",
+            "algorithm",
             "how does the model work"
         ]
     ):
 
-        return (
-            "🤖 **Machine Learning Model**\n\n"
-            "This project uses an **XGBoost Regressor** "
-            "for solar power forecasting.\n\n"
-            "The model uses weather and time-based features "
-            "such as:\n\n"
-            "• Wind speed\n"
-            "• Sunshine duration\n"
-            "• Air pressure\n"
-            "• Solar radiation\n"
-            "• Air temperature\n"
-            "• Relative humidity\n"
-            "• Hour\n"
-            "• Day\n"
-            "• Month\n\n"
-            "These features are used to estimate solar power "
-            "generation."
-        )
+        return ml_answer()
 
-    # ======================================================
+    # ------------------------------------------------------
+    # Efficiency
+    # ------------------------------------------------------
+
+    if contains_any(
+        q,
+        [
+            "efficiency",
+            "panel efficiency",
+            "improve efficiency",
+            "performance",
+            "improve solar",
+            "improve generation"
+        ]
+    ):
+
+        return efficiency_answer()
+
+    # ------------------------------------------------------
+    # Cloudy / cloudy day
+    # ------------------------------------------------------
+
+    if contains_any(
+        q,
+        [
+            "cloudy",
+            "cloudy day",
+            "cloudy weather",
+            "cloud cover",
+            "clouds"
+        ]
+    ):
+
+        return cloudy_answer()
+
+    # ------------------------------------------------------
+    # Solar Radiation
+    # ------------------------------------------------------
+
+    if contains_any(
+        q,
+        [
+            "solar radiation",
+            "radiation"
+        ]
+    ):
+
+        return radiation_answer()
+
+    # ------------------------------------------------------
+    # Humidity
+    # ------------------------------------------------------
+
+    if contains_any(
+        q,
+        [
+            "humidity",
+            "relative humidity"
+        ]
+    ):
+
+        return humidity_answer()
+
+    # ------------------------------------------------------
+    # Temperature
+    # ------------------------------------------------------
+
+    if contains_any(
+        q,
+        [
+            "temperature",
+            "hot weather",
+            "heat"
+        ]
+    ):
+
+        return temperature_answer()
+
+    # ------------------------------------------------------
     # Battery
-    # ======================================================
+    # ------------------------------------------------------
 
     if contains_any(
         q,
@@ -491,127 +918,54 @@ def generate_answer(question: str) -> str:
             "battery",
             "charge battery",
             "charging battery",
-            "store energy",
-            "battery charging"
+            "battery charging",
+            "store energy"
         ]
     ):
 
-        data = get_current_data()
-        prediction = data.get("prediction")
-
-        if prediction is not None:
-
-            if prediction >= 6:
-
-                return (
-                    "🔋 **Battery Recommendation**\n\n"
-                    f"The latest available solar prediction is "
-                    f"**{prediction:.2f} kW**, which indicates "
-                    "strong generation.\n\n"
-                    "This is generally a suitable period to "
-                    "prioritize battery charging if your system "
-                    "supports it."
-                )
-
-            elif prediction >= 3:
-
-                return (
-                    "🔋 **Battery Recommendation**\n\n"
-                    f"The latest available prediction is "
-                    f"**{prediction:.2f} kW**, indicating "
-                    "moderate solar generation.\n\n"
-                    "Battery charging may be reasonable, but "
-                    "available solar power should be monitored."
-                )
-
-            else:
-
-                return (
-                    "🔋 **Battery Recommendation**\n\n"
-                    f"The latest available prediction is "
-                    f"**{prediction:.2f} kW**, indicating "
-                    "relatively low generation.\n\n"
-                    "If possible, consider waiting for stronger "
-                    "solar generation before prioritizing charging."
-                )
-
-        return (
-            "🔋 **Battery Recommendation**\n\n"
-            "Battery charging is generally most effective when "
-            "solar generation is strong.\n\n"
-            "For this application, the recommended daytime "
-            "window is approximately **10 AM–3 PM**.\n\n"
-            "For the actual current prediction, check the "
-            "**Solar Forecast** page."
+        return battery_answer(
+            get_current_data()
         )
 
-    # ======================================================
-    # Heavy Appliances
-    # ======================================================
+    # ------------------------------------------------------
+    # Appliances
+    # ------------------------------------------------------
 
     if contains_any(
         q,
         [
-            "heavy appliance",
-            "heavy appliances",
             "washing machine",
             "washing machines",
             "water pump",
             "water pumps",
             "ev charger",
             "ev charging",
+            "heavy appliance",
+            "heavy appliances",
+            "run appliance",
             "run appliances",
-            "run appliance"
+            "high power appliance",
+            "high power appliances"
         ]
     ):
 
-        data = get_current_data()
-        prediction = data.get("prediction")
-
-        if prediction is not None and prediction >= 6:
-
-            return (
-                "⚡ **Appliance Recommendation**\n\n"
-                f"The latest available solar prediction is "
-                f"**{prediction:.2f} kW**, indicating strong "
-                "generation.\n\n"
-                "This is generally a favorable condition for "
-                "running flexible high-power appliances such as "
-                "washing machines, water pumps, or EV chargers."
-            )
-
-        if prediction is not None:
-
-            return (
-                "⚡ **Appliance Recommendation**\n\n"
-                f"The latest available solar prediction is "
-                f"**{prediction:.2f} kW**.\n\n"
-                "For better direct solar utilization, consider "
-                "scheduling flexible high-power appliances during "
-                "periods of stronger daytime generation."
-            )
-
-        return (
-            "⚡ **Appliance Scheduling**\n\n"
-            "High-power appliances are generally better scheduled "
-            "during periods of strong solar generation.\n\n"
-            "The recommended daytime window for this application "
-            "is approximately **10 AM–3 PM**."
+        return appliance_answer(
+            get_current_data()
         )
 
-    # ======================================================
+    # ------------------------------------------------------
     # Forecast
-    # ======================================================
+    # ------------------------------------------------------
 
     if contains_any(
         q,
         [
             "forecast",
             "solar generation",
-            "solar power",
+            "solar output",
             "power generation",
             "generation today",
-            "solar output",
+            "solar power today",
             "will solar",
             "how much solar",
             "high today",
@@ -619,68 +973,51 @@ def generate_answer(question: str) -> str:
         ]
     ):
 
-        data = get_current_data()
+        return forecast_answer(
+            get_current_data()
+        )
 
-        return forecast_answer(data)
-
-    # ======================================================
+    # ------------------------------------------------------
     # Weather
-    # ======================================================
+    # ------------------------------------------------------
 
     if contains_any(
         q,
         [
             "weather",
-            "temperature",
-            "humidity",
-            "pressure",
-            "wind",
-            "cloud",
-            "clouds",
-            "sunshine",
-            "sunlight",
-            "radiation"
+            "current weather",
+            "weather today"
         ]
     ):
 
-        data = get_current_data()
+        return weather_answer(
+            get_current_data()
+        )
 
-        return weather_answer(data)
-
-    # ======================================================
+    # ------------------------------------------------------
     # Energy Saving
-    # ======================================================
+    # ------------------------------------------------------
 
     if contains_any(
         q,
         [
-            "saving",
-            "save energy",
             "energy saving",
+            "save energy",
+            "save electricity",
+            "saving electricity",
             "reduce electricity",
             "reduce power",
             "electricity bill",
-            "save electricity"
+            "energy consumption",
+            "save power"
         ]
     ):
 
-        return (
-            "💡 **Energy-Saving Recommendations**\n\n"
-            "1. Use high-power appliances during periods of "
-            "strong solar generation.\n\n"
-            "2. Reduce unnecessary standby consumption.\n\n"
-            "3. Use stored battery energy when solar generation "
-            "is low.\n\n"
-            "4. Keep solar panels clean and free from unnecessary "
-            "obstructions.\n\n"
-            "5. Monitor your historical solar generation.\n\n"
-            "6. Shift flexible electricity consumption toward "
-            "strong daytime solar production."
-        )
+        return energy_saving_answer()
 
-    # ======================================================
+    # ------------------------------------------------------
     # Maintenance
-    # ======================================================
+    # ------------------------------------------------------
 
     if contains_any(
         q,
@@ -689,30 +1026,17 @@ def generate_answer(question: str) -> str:
             "maintain",
             "clean panel",
             "clean panels",
-            "solar panel",
-            "solar panels",
             "panel cleaning",
-            "panel care"
+            "panel care",
+            "solar panel maintenance"
         ]
     ):
 
-        return (
-            "🔧 **Solar Panel Maintenance**\n\n"
-            "Regular maintenance can help keep a solar system "
-            "operating effectively.\n\n"
-            "Recommended practices include:\n\n"
-            "• Keep panels reasonably clean.\n"
-            "• Remove dust, leaves, and visible obstructions.\n"
-            "• Check for unnecessary shading.\n"
-            "• Monitor changes in generation.\n"
-            "• Investigate unusual drops in output.\n\n"
-            "For electrical or physical faults, use qualified "
-            "professional inspection."
-        )
+        return maintenance_answer()
 
-    # ======================================================
+    # ------------------------------------------------------
     # Daily Report
-    # ======================================================
+    # ------------------------------------------------------
 
     if contains_any(
         q,
@@ -726,59 +1050,13 @@ def generate_answer(question: str) -> str:
         ]
     ):
 
-        data = get_current_data()
-
-        prediction = data.get("prediction")
-        temperature = data.get("temperature")
-        humidity = data.get("humidity")
-        clouds = data.get("clouds")
-
-        report = "📊 **Daily Solar Energy Report**\n\n"
-
-        if prediction is not None:
-
-            if prediction >= 6:
-                level = "High"
-            elif prediction >= 3:
-                level = "Moderate"
-            else:
-                level = "Low"
-
-            report += (
-                f"☀️ **Solar Prediction:** "
-                f"{prediction:.2f} kW ({level})\n\n"
-            )
-
-        else:
-
-            report += (
-                "☀️ **Solar Prediction:** "
-                "Current prediction unavailable\n\n"
-            )
-
-        if temperature is not None:
-            report += f"🌡️ **Temperature:** {temperature}\n\n"
-
-        if humidity is not None:
-            report += f"💧 **Humidity:** {humidity}\n\n"
-
-        if clouds is not None:
-            report += f"☁️ **Cloud Cover:** {clouds}\n\n"
-
-        report += (
-            "🔋 **Battery:** Charge when solar generation "
-            "is strong.\n\n"
-            "⚡ **Appliances:** Prefer flexible high-power "
-            "loads during strong daytime generation.\n\n"
-            "💡 **Energy Saving:** Reduce standby consumption "
-            "and maximize direct solar usage."
+        return daily_report_answer(
+            get_current_data()
         )
 
-        return report
-
-    # ======================================================
-    # Project Information
-    # ======================================================
+    # ------------------------------------------------------
+    # Project
+    # ------------------------------------------------------
 
     if contains_any(
         q,
@@ -786,77 +1064,55 @@ def generate_answer(question: str) -> str:
             "what is this project",
             "what does this project do",
             "about this project",
+            "project features",
             "what can you do",
-            "your capabilities",
-            "features"
+            "your capabilities"
         ]
     ):
 
-        return (
-            "☀️ **Solar Power Forecast Agent**\n\n"
-            "This application forecasts solar power generation "
-            "and provides energy recommendations.\n\n"
-            "It includes:\n\n"
-            "• XGBoost solar forecasting\n"
-            "• Live weather information\n"
-            "• Prediction history\n"
-            "• Analytics\n"
-            "• AI Energy Assistant\n"
-            "• Battery recommendations\n"
-            "• Appliance scheduling\n"
-            "• Maintenance guidance\n"
-            "• Daily reports\n"
-            "• Administrative tools"
-        )
+        return project_answer()
 
-    # ======================================================
+    # ------------------------------------------------------
     # General Solar
-    # ======================================================
+    # ------------------------------------------------------
 
     if contains_any(
         q,
         [
             "solar",
             "photovoltaic",
-            "pv",
+            "photovoltaics",
+            "pv panels",
+            "pv system",
+            "sunlight",
             "sun"
         ]
     ):
 
-        return (
-            "☀️ **Solar Energy**\n\n"
-            "Solar power generation depends mainly on the "
-            "sunlight reaching the panels and the operating "
-            "conditions of the system.\n\n"
-            "In this application, weather and time-based "
-            "features are used by an XGBoost model to forecast "
-            "solar power generation.\n\n"
-            "You can also explore the **Solar Forecast**, "
-            "**Live Weather**, and **Analytics** pages."
-        )
+        return solar_answer()
 
-    # ======================================================
-    # Unknown Question
-    # ======================================================
+    # ------------------------------------------------------
+    # Unknown
+    # ------------------------------------------------------
 
     return (
-        "I'm your Solar Energy Assistant. ☀️\n\n"
-        "I can help you with:\n\n"
-        "• Solar power forecasts\n"
-        "• Current weather\n"
+        "☀️ I can help with a wide range of solar-energy "
+        "questions.\n\n"
+        "Try asking me about:\n\n"
+        "• Solar forecasting\n"
+        "• Weather\n"
+        "• Solar radiation\n"
+        "• Temperature\n"
+        "• Humidity\n"
+        "• Cloudy conditions\n"
         "• Battery charging\n"
         "• Appliance scheduling\n"
-        "• Energy-saving strategies\n"
-        "• Solar panel maintenance\n"
-        "• XGBoost and machine learning\n"
-        "• Daily solar reports\n\n"
-        "Try asking:\n\n"
-        "\"Will solar generation be high today?\"\n"
-        "\"Should I charge my battery now?\"\n"
-        "\"Can I run my washing machine?\"\n"
-        "\"What is your ML model?\"\n"
-        "\"Give me today's weather.\"\n"
-        "\"Generate a daily report.\""
+        "• Energy saving\n"
+        "• Solar panel efficiency\n"
+        "• Maintenance\n"
+        "• XGBoost / machine learning\n"
+        "• Daily reports\n\n"
+        "You don't have to use one of the six quick questions."
     )
 
 
@@ -867,7 +1123,9 @@ def generate_answer(question: str) -> str:
 @router.post("/ai-assistant")
 def ai_assistant(request: AssistantRequest):
 
-    answer = generate_answer(request.question)
+    answer = generate_answer(
+        request.question
+    )
 
     return {
         "response": answer
