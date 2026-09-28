@@ -7,10 +7,10 @@ The application predicts solar power generation using weather and time-based fea
 ## 🌞 Live Application
 
 **Frontend:**
-[Solar Power Forecast Agent — Streamlit]([https://solar-power-forecast-agent-sombc9mcuyfkyexhlmeqgz.streamlit.app/?utm_source=chatgpt.com](https://solar-power-forecast-agent-sombc9mcuyfkyexhlmeqgz.streamlit.app/))
+[Solar Power Forecast Agent — Streamlit]: [https://solar-power-forecast-agent-sombc9mcuyfkyexhlmeqgz.streamlit.app/?utm_source=chatgpt.com](https://solar-power-forecast-agent-sombc9mcuyfkyexhlmeqgz.streamlit.app/)
 
 **Backend API:**
-[Solar Power Forecast Agent — GitHub]([https://github.com/9154327992/Solar-Power-Forecast-Agent?utm_source=chatgpt.com](https://solar-power-forecast-agent.onrender.com))
+[Solar Power Forecast Agent — GitHub]: [https://github.com/9154327992/Solar-Power-Forecast-Agent?utm_source=chatgpt.com](https://solar-power-forecast-agent.onrender.com)
 
 ---
 
