@@ -7,10 +7,10 @@ The application predicts solar power generation using weather and time-based fea
 ## 🌞 Live Application
 
 **Frontend:**
-[Solar Power Forecast Agent — Streamlit](https://solar-power-forecast-agent-sombc9mcuyfkyexhlmeqgz.streamlit.app/?utm_source=chatgpt.com)
+[Solar Power Forecast Agent — Streamlit]([https://solar-power-forecast-agent-sombc9mcuyfkyexhlmeqgz.streamlit.app/?utm_source=chatgpt.com](https://solar-power-forecast-agent-sombc9mcuyfkyexhlmeqgz.streamlit.app/))
 
 **Backend API:**
-[Solar Power Forecast Agent — GitHub](https://github.com/9154327992/Solar-Power-Forecast-Agent?utm_source=chatgpt.com)
+[Solar Power Forecast Agent — GitHub]([https://github.com/9154327992/Solar-Power-Forecast-Agent?utm_source=chatgpt.com](https://solar-power-forecast-agent.onrender.com))
 
 ---
 
@@ -463,3 +463,19 @@ Built using:
 ## 📄 License
 
 Add your preferred open-source license here, such as **MIT License**, if you intend to distribute the project under that license.
+
+---
+
+## 👨‍💻 Author
+
+Matta Venkata Karthik
+
+🎓 B.Tech – Computer Science and Design (Data Science)
+
+🏫 College: NRI Institute Of Technology
+
+🔗 LinkedIn: https://www.linkedin.com/in/venkata-karthik-matta-b0536b321
+
+🏫 College LinkedIn: https://www.linkedin.com/company/datascience-nriit
+
+💻 GitHub: https://github.com/9154327992
