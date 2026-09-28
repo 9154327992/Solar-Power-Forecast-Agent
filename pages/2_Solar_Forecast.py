@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 import pandas as pd
 from pathlib import Path
+from datetime import datetime
 
 # ==========================================================
 # Configuration
@@ -22,11 +23,68 @@ st.set_page_config(
 css = Path("assets/style.css")
 
 if css.exists():
-    with open(css) as f:
+    with open(css, encoding="utf-8") as f:
         st.markdown(
             f"<style>{f.read()}</style>",
             unsafe_allow_html=True
         )
+
+# ==========================================================
+# Helper Functions
+# ==========================================================
+
+def get_live_weather():
+    """
+    Get current weather data from the backend.
+    Tries the main weather endpoint first, then the
+    current-weather endpoint.
+    """
+
+    endpoints = [
+        f"{API_URL}/api/weather",
+        f"{API_URL}/api/weather/current"
+    ]
+
+    for endpoint in endpoints:
+        try:
+            response = requests.get(
+                endpoint,
+                timeout=15
+            )
+
+            if response.ok:
+                data = response.json()
+
+                # Handle APIs that wrap the weather object
+                if isinstance(data, dict):
+                    if "data" in data and isinstance(data["data"], dict):
+                        return data["data"]
+
+                    if "weather" in data and isinstance(data["weather"], dict):
+                        return data["weather"]
+
+                    return data
+
+        except Exception:
+            continue
+
+    return None
+
+
+def get_value(data, *keys):
+    """
+    Return the first available value from possible API keys.
+    """
+
+    if not isinstance(data, dict):
+        return None
+
+    for key in keys:
+        if key in data and data[key] is not None:
+            return data[key]
+
+    return None
+
 
 # ==========================================================
 # Header
@@ -35,10 +93,85 @@ if css.exists():
 st.title("☀ Solar Power Forecast")
 
 st.write(
-    "Predict solar power generation using weather parameters."
+    "Predict solar power generation using current weather parameters."
 )
 
 st.divider()
+
+# ==========================================================
+# Get Current Weather
+# ==========================================================
+
+weather = get_live_weather()
+
+# Current date/time fallback
+now = datetime.now()
+
+# Default values
+wind_default = 3.5
+pressure_default = 1013.0
+temperature_default = 28.0
+humidity_default = 60.0
+
+# Values from Live Weather API
+if weather:
+
+    wind_api = get_value(
+        weather,
+        "wind_speed",
+        "windSpeed",
+        "wind"
+    )
+
+    pressure_api = get_value(
+        weather,
+        "air_pressure",
+        "pressure",
+        "airPressure"
+    )
+
+    temperature_api = get_value(
+        weather,
+        "air_temperature",
+        "temperature",
+        "temp"
+    )
+
+    humidity_api = get_value(
+        weather,
+        "relative_humidity",
+        "humidity",
+        "relativeHumidity"
+    )
+
+    if wind_api is not None:
+        wind_default = float(wind_api)
+
+    if pressure_api is not None:
+        pressure_default = float(pressure_api)
+
+    if temperature_api is not None:
+        temperature_default = float(temperature_api)
+
+    if humidity_api is not None:
+        humidity_default = float(humidity_api)
+
+# ==========================================================
+# Weather Status
+# ==========================================================
+
+if weather:
+
+    st.success(
+        "🌤 Current weather data loaded from Live Weather."
+    )
+
+else:
+
+    st.warning(
+        "⚠️ Live Weather data could not be loaded. "
+        "Default values are being used."
+    )
 
 # ==========================================================
 # Weather Input
@@ -54,60 +187,69 @@ with left:
         "Wind Speed (m/s)",
         min_value=0.0,
         max_value=50.0,
-        value=3.5
+        value=wind_default,
+        step=0.1
     )
 
     sunshine = st.number_input(
         "Sunshine Duration (Hours)",
         min_value=0.0,
         max_value=24.0,
-        value=6.0
+        value=6.0,
+        step=0.1
     )
 
     pressure = st.number_input(
         "Air Pressure (hPa)",
         min_value=800.0,
         max_value=1100.0,
-        value=1013.0
+        value=pressure_default,
+        step=0.1
     )
 
     radiation = st.number_input(
         "Solar Radiation (W/m²)",
         min_value=0.0,
-        value=450.0
+        max_value=1500.0,
+        value=450.0,
+        step=1.0
     )
 
 with right:
 
     temperature = st.number_input(
         "Air Temperature (°C)",
-        value=28.0
+        value=temperature_default,
+        step=0.1
     )
 
     humidity = st.number_input(
         "Relative Humidity (%)",
-        value=60.0
+        min_value=0.0,
+        max_value=100.0,
+        value=humidity_default,
+        step=1.0
     )
 
     hour = st.slider(
         "Hour",
         0,
         23,
-        12
+        now.hour
     )
 
     day = st.slider(
         "Day",
         1,
         31,
-        15
+        now.day
     )
 
     month = st.slider(
         "Month",
         1,
         12,
-        6
+        now.month
     )
 
 st.divider()
@@ -161,17 +303,21 @@ if st.button(
 
         except Exception as e:
 
-            st.error(f"Prediction Failed\n\n{e}")
+            st.error(
+                f"Prediction Failed\n\n{e}"
+            )
 
             st.stop()
 
-    st.success("Prediction Completed Successfully")
+    # ======================================================
+    # Prediction Result
+    # ======================================================
+
+    st.success(
+        "Prediction Completed Successfully"
+    )
 
     st.divider()
-
-    # ======================================================
-    # Result Cards
-    # ======================================================
 
     st.subheader("Forecast Result")
 
@@ -180,31 +326,22 @@ if st.button(
     with c1:
 
         st.metric(
-
             "Predicted Power",
-
             f"{result['prediction']:.2f} kW"
-
         )
 
     with c2:
 
         st.metric(
-
             "Generation Level",
-
             result["level"]
-
         )
 
     with c3:
 
         st.metric(
-
             "Efficiency",
-
             f"{result['efficiency']:.2f}%"
-
         )
 
     st.divider()
@@ -247,7 +384,9 @@ if st.button(
 
     st.subheader("🤖 AI Recommendation")
 
-    st.info(result["recommendation"])
+    st.info(
+        result["recommendation"]
+    )
 
     st.divider()
 
@@ -257,7 +396,31 @@ if st.button(
 
     st.subheader("💡 AI Insight")
 
-    st.info("AI insight is currently unavailable.")
+    prediction = result["prediction"]
+
+    if prediction >= 6:
+
+        st.info(
+            f"Solar generation is currently strong at "
+            f"{prediction:.2f} kW. This is a suitable period "
+            f"for battery charging and flexible high-power usage."
+        )
+
+    elif prediction >= 3:
+
+        st.info(
+            f"Solar generation is moderate at "
+            f"{prediction:.2f} kW. Monitor generation before "
+            f"using high-power appliances."
+        )
+
+    else:
+
+        st.info(
+            f"Solar generation is relatively low at "
+            f"{prediction:.2f} kW. Consider reducing or "
+            f"delaying flexible high-power usage."
+        )
 
     st.divider()
 
@@ -269,7 +432,7 @@ if st.button(
 
     summary = pd.DataFrame({
 
-        "Weather Parameter":[
+        "Weather Parameter": [
 
             "Wind Speed",
 
@@ -291,19 +454,19 @@ if st.button(
 
         ],
 
-        "Value":[
+        "Value": [
 
-            wind,
+            f"{wind:.2f} m/s",
 
-            sunshine,
+            f"{sunshine:.2f} hours",
 
-            pressure,
+            f"{pressure:.2f} hPa",
 
-            radiation,
+            f"{radiation:.2f} W/m²",
 
-            temperature,
+            f"{temperature:.2f} °C",
 
-            humidity,
+            f"{humidity:.0f}%",
 
             hour,
 
@@ -316,11 +479,9 @@ if st.button(
     })
 
     st.dataframe(
-
         summary,
-
-        use_container_width=True
-
+        use_container_width=True,
+        hide_index=True
     )
 
     st.divider()
@@ -329,7 +490,9 @@ if st.button(
     # Download Report
     # ======================================================
 
-    csv = summary.to_csv(index=False)
+    csv = summary.to_csv(
+        index=False
+    )
 
     st.download_button(
 
