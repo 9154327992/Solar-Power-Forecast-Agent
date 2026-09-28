@@ -1,6 +1,8 @@
 import streamlit as st
 import requests
 from pathlib import Path
+import streamlit.components.v1 as components
+
 
 # ==========================================================
 # Configuration
@@ -8,11 +10,13 @@ from pathlib import Path
 
 API_URL = "https://solar-power-forecast-agent.onrender.com"
 
+
 st.set_page_config(
     page_title="AI Energy Assistant",
     page_icon="🤖",
     layout="wide"
 )
+
 
 # ==========================================================
 # Load CSS
@@ -21,18 +25,28 @@ st.set_page_config(
 css = Path("assets/style.css")
 
 if css.exists():
-    with open(css) as f:
+
+    with open(css, encoding="utf-8") as f:
+
         st.markdown(
             f"<style>{f.read()}</style>",
             unsafe_allow_html=True
         )
+
 
 # ==========================================================
 # Session State
 # ==========================================================
 
 if "messages" not in st.session_state:
+
     st.session_state.messages = []
+
+
+if "prompt" not in st.session_state:
+
+    st.session_state.prompt = ""
+
 
 # ==========================================================
 # Header
@@ -41,10 +55,13 @@ if "messages" not in st.session_state:
 st.title("🤖 AI Energy Assistant")
 
 st.write(
-    "Ask questions about solar power, weather, battery usage, and energy optimization."
+    "Ask questions about solar power, weather, "
+    "battery usage, appliances, maintenance, "
+    "and energy optimization."
 )
 
 st.divider()
+
 
 # ==========================================================
 # Quick Questions
@@ -52,58 +69,147 @@ st.divider()
 
 st.subheader("⚡ Quick Questions")
 
-c1, c2 = st.columns(2)
+st.caption(
+    "These are shortcuts. You can also type any "
+    "solar or energy question below."
+)
 
-with c1:
 
-    if st.button("Will solar generation be high today?"):
-        st.session_state.prompt = "Will solar generation be high today?"
+col1, col2 = st.columns(2)
 
-    if st.button("Should I charge my battery now?"):
-        st.session_state.prompt = "Should I charge my battery now?"
 
-    if st.button("Can I run heavy appliances now?"):
-        st.session_state.prompt = "Can I run heavy appliances now?"
+with col1:
 
-with c2:
+    if st.button(
+        "Will solar generation be high today?",
+        use_container_width=True
+    ):
 
-    if st.button("Explain today's forecast"):
-        st.session_state.prompt = "Explain today's forecast."
+        st.session_state.prompt = (
+            "Will solar generation be high today?"
+        )
 
-    if st.button("Give energy saving tips"):
-        st.session_state.prompt = "Give me energy saving tips."
+        st.session_state.auto_scroll = True
 
-    if st.button("Generate a daily report"):
-        st.session_state.prompt = "Generate a daily solar energy report."
+
+    if st.button(
+        "Should I charge my battery now?",
+        use_container_width=True
+    ):
+
+        st.session_state.prompt = (
+            "Should I charge my battery now?"
+        )
+
+        st.session_state.auto_scroll = True
+
+
+    if st.button(
+        "Can I run heavy appliances now?",
+        use_container_width=True
+    ):
+
+        st.session_state.prompt = (
+            "Can I run heavy appliances now?"
+        )
+
+        st.session_state.auto_scroll = True
+
+
+with col2:
+
+    if st.button(
+        "Explain today's forecast",
+        use_container_width=True
+    ):
+
+        st.session_state.prompt = (
+            "Explain today's forecast."
+        )
+
+        st.session_state.auto_scroll = True
+
+
+    if st.button(
+        "Give energy saving tips",
+        use_container_width=True
+    ):
+
+        st.session_state.prompt = (
+            "Give me energy saving tips."
+        )
+
+        st.session_state.auto_scroll = True
+
+
+    if st.button(
+        "Generate a daily report",
+        use_container_width=True
+    ):
+
+        st.session_state.prompt = (
+            "Generate a daily solar energy report."
+        )
+
+        st.session_state.auto_scroll = True
+
 
 st.divider()
 
+
 # ==========================================================
-# Chat Interface
+# Chat
 # ==========================================================
 
 st.subheader("💬 Chat")
 
-for msg in st.session_state.messages:
 
-    with st.chat_message(msg["role"]):
-        st.markdown(msg["content"])
+# ----------------------------------------------------------
+# Display Previous Messages
+# ----------------------------------------------------------
 
-default_prompt = st.session_state.get("prompt", "")
+for message in st.session_state.messages:
+
+    with st.chat_message(
+        message["role"]
+    ):
+
+        st.markdown(
+            message["content"]
+        )
+
+
+# ==========================================================
+# Chat Input
+# ==========================================================
 
 user_prompt = st.chat_input(
     "Ask anything about solar energy..."
 )
 
-if not user_prompt and default_prompt:
-    user_prompt = default_prompt
-    st.session_state.prompt = ""
 
 # ==========================================================
-# AI Processing
+# Quick Question Handler
+# ==========================================================
+
+if not user_prompt:
+
+    if st.session_state.prompt:
+
+        user_prompt = st.session_state.prompt
+
+        st.session_state.prompt = ""
+
+
+# ==========================================================
+# Process Question
 # ==========================================================
 
 if user_prompt:
+
+    # ------------------------------------------------------
+    # Store User Message
+    # ------------------------------------------------------
 
     st.session_state.messages.append(
         {
@@ -112,8 +218,19 @@ if user_prompt:
         }
     )
 
+
+    # ------------------------------------------------------
+    # Display User Message
+    # ------------------------------------------------------
+
     with st.chat_message("user"):
+
         st.markdown(user_prompt)
+
+
+    # ------------------------------------------------------
+    # Assistant Response
+    # ------------------------------------------------------
 
     with st.chat_message("assistant"):
 
@@ -122,120 +239,200 @@ if user_prompt:
             try:
 
                 response = requests.post(
-
                     f"{API_URL}/ai-assistant",
-
                     json={
                         "question": user_prompt
                     },
-
                     timeout=30
-
                 )
+
 
                 response.raise_for_status()
 
-                answer = response.json()["response"]
 
-            except Exception:
+                result = response.json()
 
-                # Fallback responses
 
-                prompt = user_prompt.lower()
+                answer = result.get(
+                    "response",
+                    "I couldn't generate a response."
+                )
 
-                if "battery" in prompt:
 
-                    answer = (
-                        "Charge the battery during high solar generation "
-                        "hours between 10 AM and 3 PM."
-                    )
+            except requests.exceptions.Timeout:
 
-                elif "forecast" in prompt:
+                answer = (
+                    "⏳ The backend took too long to respond.\n\n"
+                    "Please try your question again."
+                )
 
-                    answer = (
-                        "Solar generation depends mainly on solar radiation, "
-                        "sunshine duration, cloud cover, and temperature."
-                    )
 
-                elif "heavy" in prompt:
+            except requests.exceptions.ConnectionError:
 
-                    answer = (
-                        "Operate washing machines, pumps, or EV charging "
-                        "during peak solar generation hours."
-                    )
+                answer = (
+                    "🔌 I couldn't connect to the backend.\n\n"
+                    "Please check whether the backend service "
+                    "is currently running."
+                )
 
-                elif "saving" in prompt:
 
-                    answer = (
-                        "Use appliances during daylight, clean solar panels "
-                        "regularly, and avoid unnecessary standby loads."
-                    )
+            except Exception as error:
 
-                elif "report" in prompt:
+                answer = (
+                    "⚠️ I couldn't process that request right now.\n\n"
+                    f"Error: {str(error)}"
+                )
 
-                    answer = (
-                        "Daily Report\n\n"
-                        "- Monitor weather.\n"
-                        "- Forecast solar generation.\n"
-                        "- Charge batteries during peak sunlight.\n"
-                        "- Shift heavy loads to midday."
-                    )
-
-                else:
-
-                    answer = (
-                        "I'm your Solar Energy Assistant. "
-                        "Ask me about forecasting, battery usage, "
-                        "maintenance, weather, or energy optimization."
-                    )
 
         st.markdown(answer)
 
-    st.session_state.messages.append(
 
+    # ------------------------------------------------------
+    # Store Assistant Message
+    # ------------------------------------------------------
+
+    st.session_state.messages.append(
         {
             "role": "assistant",
             "content": answer
         }
-
     )
 
-st.divider()
+
+    # ------------------------------------------------------
+    # Auto Scroll
+    # ------------------------------------------------------
+
+    st.session_state.auto_scroll = True
+
+
+# ==========================================================
+# Auto Scroll To Latest Answer
+# ==========================================================
+
+if st.session_state.get(
+    "auto_scroll",
+    False
+):
+
+    components.html(
+        """
+        <script>
+
+        function scrollToLatestAnswer() {
+
+            try {
+
+                const parentDocument =
+                    window.parent.document;
+
+                const messages =
+                    parentDocument.querySelectorAll(
+                        '[data-testid="stChatMessage"]'
+                    );
+
+                if (messages.length > 0) {
+
+                    const lastMessage =
+                        messages[messages.length - 1];
+
+                    lastMessage.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center"
+                    });
+                }
+
+            } catch (error) {
+
+                console.log(
+                    "Auto-scroll error:",
+                    error
+                );
+            }
+        }
+
+
+        setTimeout(
+            scrollToLatestAnswer,
+            100
+        );
+
+        setTimeout(
+            scrollToLatestAnswer,
+            500
+        );
+
+        setTimeout(
+            scrollToLatestAnswer,
+            1000
+        );
+
+        </script>
+        """,
+        height=0
+    )
+
+    st.session_state.auto_scroll = False
+
 
 # ==========================================================
 # AI Capabilities
 # ==========================================================
 
+st.divider()
+
 st.subheader("🧠 AI Capabilities")
+
 
 col1, col2 = st.columns(2)
 
+
 with col1:
 
-    st.success("✔ Explain Solar Forecast")
+    st.success(
+        "✔ Solar Forecast Explanation"
+    )
 
-    st.success("✔ Battery Recommendations")
+    st.success(
+        "✔ Battery Recommendations"
+    )
 
-    st.success("✔ Appliance Scheduling")
+    st.success(
+        "✔ Appliance Scheduling"
+    )
 
-    st.success("✔ Weather Interpretation")
+    st.success(
+        "✔ Weather Interpretation"
+    )
+
 
 with col2:
 
-    st.success("✔ Energy Saving Tips")
+    st.success(
+        "✔ Energy Saving Tips"
+    )
 
-    st.success("✔ Maintenance Advice")
+    st.success(
+        "✔ Solar Panel Maintenance"
+    )
 
-    st.success("✔ Daily Report")
+    st.success(
+        "✔ XGBoost / ML Explanation"
+    )
 
-    st.success("✔ Smart Recommendations")
+    st.success(
+        "✔ Daily Solar Reports"
+    )
+
 
 st.divider()
+
 
 # ==========================================================
 # Footer
 # ==========================================================
 
 st.caption(
-    "Powered by Artificial Intelligence • Solar Power Forecast Agent"
+    "Powered by Artificial Intelligence • "
+    "Solar Power Forecast Agent"
 )
