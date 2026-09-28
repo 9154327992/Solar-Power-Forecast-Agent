@@ -1,7 +1,6 @@
 import streamlit as st
 import requests
 import pandas as pd
-from datetime import datetime
 from pathlib import Path
 
 # ==========================================================
@@ -9,15 +8,6 @@ from pathlib import Path
 # ==========================================================
 
 API_URL = "https://solar-power-forecast-agent.onrender.com"
-
-OPENWEATHER_API_KEY = st.secrets.get(
-    "OPENWEATHER_API_KEY",
-    ""
-)
-
-OPENWEATHER_URL = (
-    "https://api.openweathermap.org/data/2.5/weather"
-)
 
 st.set_page_config(
     page_title="Solar Forecast",
@@ -32,7 +22,7 @@ st.set_page_config(
 css = Path("assets/style.css")
 
 if css.exists():
-    with open(css, encoding="utf-8") as f:
+    with open(css) as f:
         st.markdown(
             f"<style>{f.read()}</style>",
             unsafe_allow_html=True
@@ -45,325 +35,80 @@ if css.exists():
 st.title("☀ Solar Power Forecast")
 
 st.write(
-    "Predict solar power generation using current weather "
-    "conditions and solar parameters."
+    "Predict solar power generation using weather parameters."
 )
 
 st.divider()
 
 # ==========================================================
-# City Selection
-# ==========================================================
-
-st.subheader("📍 Weather Location")
-
-city = st.text_input(
-    "Enter City",
-    placeholder="Example: Vijayawada"
-)
-
-# ==========================================================
-# Get Current Weather
-# ==========================================================
-
-weather = None
-
-if city:
-
-    if OPENWEATHER_API_KEY == "":
-
-        st.error(
-            "Weather API key is not configured."
-        )
-
-    else:
-
-        with st.spinner(
-            "Fetching current weather..."
-        ):
-
-            try:
-
-                params = {
-                    "q": city,
-                    "appid": OPENWEATHER_API_KEY,
-                    "units": "metric"
-                }
-
-                response = requests.get(
-                    OPENWEATHER_URL,
-                    params=params,
-                    timeout=20
-                )
-
-                response.raise_for_status()
-
-                weather = response.json()
-
-            except Exception as e:
-
-                st.error(
-                    f"Unable to fetch weather.\n\n{e}"
-                )
-
-# ==========================================================
-# Current Weather Values
-# ==========================================================
-
-now = datetime.now()
-
-if weather:
-
-    # ------------------------------------------------------
-    # Values from OpenWeather
-    # ------------------------------------------------------
-
-    temperature = float(
-        weather["main"]["temp"]
-    )
-
-    humidity = float(
-        weather["main"]["humidity"]
-    )
-
-    pressure = float(
-        weather["main"]["pressure"]
-    )
-
-    wind = float(
-        weather["wind"]["speed"]
-    )
-
-    cloud_cover = float(
-        weather["clouds"]["all"]
-    )
-
-    description = (
-        weather["weather"][0]["description"]
-        .title()
-    )
-
-    sunrise = datetime.fromtimestamp(
-        weather["sys"]["sunrise"]
-    ).strftime("%H:%M")
-
-    sunset = datetime.fromtimestamp(
-        weather["sys"]["sunset"]
-    ).strftime("%H:%M")
-
-    # ------------------------------------------------------
-    # Current date/time
-    # ------------------------------------------------------
-
-    hour = now.hour
-    day = now.day
-    month = now.month
-
-    st.success(
-        f"Current weather loaded for {city}."
-    )
-
-    # ======================================================
-    # Current Weather Display
-    # ======================================================
-
-    st.subheader("🌦 Current Weather")
-
-    c1, c2, c3, c4 = st.columns(4)
-
-    with c1:
-
-        st.metric(
-            "🌡 Temperature",
-            f"{temperature:.2f} °C"
-        )
-
-    with c2:
-
-        st.metric(
-            "💧 Humidity",
-            f"{humidity:.0f}%"
-        )
-
-    with c3:
-
-        st.metric(
-            "🌬 Wind Speed",
-            f"{wind:.1f} m/s"
-        )
-
-    with c4:
-
-        st.metric(
-            "📈 Air Pressure",
-            f"{pressure:.0f} hPa"
-        )
-
-    c5, c6, c7 = st.columns(3)
-
-    with c5:
-
-        st.metric(
-            "☁ Cloud Cover",
-            f"{cloud_cover:.0f}%"
-        )
-
-    with c6:
-
-        st.metric(
-            "🌅 Sunrise",
-            sunrise
-        )
-
-    with c7:
-
-        st.metric(
-            "🌇 Sunset",
-            sunset
-        )
-
-    st.info(
-        f"Weather condition: **{description}**"
-    )
-
-else:
-
-    st.info(
-        "Enter a city above to load current weather "
-        "parameters."
-    )
-
-    # Default values are only used until weather is loaded.
-    temperature = 28.0
-    humidity = 60.0
-    pressure = 1013.0
-    wind = 3.5
-    cloud_cover = 0.0
-
-    hour = now.hour
-    day = now.day
-    month = now.month
-
-st.divider()
-
-# ==========================================================
-# Weather Parameters
+# Weather Input
 # ==========================================================
 
 st.subheader("🌦 Weather Parameters")
 
-st.caption(
-    "Temperature, humidity, wind speed and air pressure "
-    "are automatically synchronized with the current weather."
-)
-
 left, right = st.columns(2)
-
-# ==========================================================
-# Left Column
-# ==========================================================
 
 with left:
 
-    wind_input = st.number_input(
+    wind = st.number_input(
         "Wind Speed (m/s)",
         min_value=0.0,
         max_value=50.0,
-        value=float(wind),
-        step=0.1
+        value=3.5
     )
 
     sunshine = st.number_input(
         "Sunshine Duration (Hours)",
         min_value=0.0,
         max_value=24.0,
-        value=6.0,
-        step=0.1,
-        help=(
-            "OpenWeather current-weather endpoint does not "
-            "provide sunshine duration."
-        )
+        value=6.0
     )
 
-    pressure_input = st.number_input(
+    pressure = st.number_input(
         "Air Pressure (hPa)",
         min_value=800.0,
         max_value=1100.0,
-        value=float(pressure),
-        step=0.1
+        value=1013.0
     )
 
     radiation = st.number_input(
         "Solar Radiation (W/m²)",
         min_value=0.0,
-        max_value=1500.0,
-        value=450.0,
-        step=1.0,
-        help=(
-            "OpenWeather current-weather endpoint does not "
-            "provide solar radiation."
-        )
+        value=450.0
     )
-
-# ==========================================================
-# Right Column
-# ==========================================================
 
 with right:
 
-    temperature_input = st.number_input(
+    temperature = st.number_input(
         "Air Temperature (°C)",
-        value=float(temperature),
-        step=0.1
+        value=28.0
     )
 
-    humidity_input = st.number_input(
+    humidity = st.number_input(
         "Relative Humidity (%)",
-        min_value=0.0,
-        max_value=100.0,
-        value=float(humidity),
-        step=1.0
+        value=60.0
     )
 
-    hour_input = st.slider(
+    hour = st.slider(
         "Hour",
-        min_value=0,
-        max_value=23,
-        value=int(hour)
+        0,
+        23,
+        12
     )
 
-    day_input = st.slider(
+    day = st.slider(
         "Day",
-        min_value=1,
-        max_value=31,
-        value=int(day)
+        1,
+        31,
+        15
     )
 
-    month_input = st.slider(
+    month = st.slider(
         "Month",
-        min_value=1,
-        max_value=12,
-        value=int(month)
+        1,
+        12,
+        6
     )
-
-st.divider()
-
-# ==========================================================
-# Synchronization Notice
-# ==========================================================
-
-st.subheader("🔄 Weather Synchronization")
-
-st.success(
-    "The following values are synchronized with Live Weather: "
-    "Temperature, Humidity, Wind Speed and Air Pressure."
-)
-
-st.warning(
-    "Solar Radiation and Sunshine Duration are currently "
-    "manual inputs because the OpenWeather endpoint used "
-    "by this application does not provide those values."
-)
 
 st.divider()
 
@@ -376,35 +121,7 @@ if st.button(
     use_container_width=True
 ):
 
-    # ------------------------------------------------------
-    # Prediction Payload
-    # ------------------------------------------------------
-
-    payload = {
-
-        "wind_speed": wind_input,
-
-        "sunshine_duration": sunshine,
-
-        "air_pressure": pressure_input,
-
-        "solar_radiation": radiation,
-
-        "air_temperature": temperature_input,
-
-        "relative_humidity": humidity_input,
-
-        "hour": hour_input,
-
-        "day": day_input,
-
-        "month": month_input
-
-    }
-
-    with st.spinner(
-        "Predicting Solar Power..."
-    ):
+    with st.spinner("Predicting Solar Power..."):
 
         try:
 
@@ -412,7 +129,27 @@ if st.button(
 
                 f"{API_URL}/api/predict/forecast",
 
-                json=payload,
+                json={
+
+                    "wind_speed": wind,
+
+                    "sunshine_duration": sunshine,
+
+                    "air_pressure": pressure,
+
+                    "solar_radiation": radiation,
+
+                    "air_temperature": temperature,
+
+                    "relative_humidity": humidity,
+
+                    "hour": hour,
+
+                    "day": day,
+
+                    "month": month
+
+                },
 
                 timeout=20
 
@@ -424,49 +161,50 @@ if st.button(
 
         except Exception as e:
 
-            st.error(
-                f"Prediction Failed\n\n{e}"
-            )
+            st.error(f"Prediction Failed\n\n{e}")
 
             st.stop()
 
-    # ======================================================
-    # Prediction Completed
-    # ======================================================
-
-    st.success(
-        "Prediction Completed Successfully"
-    )
+    st.success("Prediction Completed Successfully")
 
     st.divider()
 
     # ======================================================
-    # Forecast Result
+    # Result Cards
     # ======================================================
 
-    st.subheader("☀️ Forecast Result")
+    st.subheader("Forecast Result")
 
     c1, c2, c3 = st.columns(3)
 
     with c1:
 
         st.metric(
+
             "Predicted Power",
+
             f"{result['prediction']:.2f} kW"
+
         )
 
     with c2:
 
         st.metric(
+
             "Generation Level",
+
             result["level"]
+
         )
 
     with c3:
 
         st.metric(
+
             "Efficiency",
+
             f"{result['efficiency']:.2f}%"
+
         )
 
     st.divider()
@@ -486,7 +224,7 @@ if st.button(
     elif "High" in level:
 
         st.info(
-            "☀️ High solar generation expected."
+            "☀ High solar generation expected."
         )
 
     elif "Moderate" in level:
@@ -498,7 +236,7 @@ if st.button(
     else:
 
         st.error(
-            "🌧️ Low solar generation expected."
+            "🌧 Low solar generation expected."
         )
 
     st.divider()
@@ -509,48 +247,17 @@ if st.button(
 
     st.subheader("🤖 AI Recommendation")
 
-    st.info(
-        result["recommendation"]
-    )
+    st.info(result["recommendation"])
 
     st.divider()
 
     # ======================================================
-    # Dynamic AI Insight
+    # AI Insight
     # ======================================================
 
     st.subheader("💡 AI Insight")
 
-    prediction = float(
-        result["prediction"]
-    )
-
-    if prediction >= 6:
-
-        st.success(
-            f"Solar generation is strong at "
-            f"**{prediction:.2f} kW**. "
-            "This is a suitable period for battery charging "
-            "and flexible high-power usage."
-        )
-
-    elif prediction >= 3:
-
-        st.warning(
-            f"Solar generation is moderate at "
-            f"**{prediction:.2f} kW**. "
-            "Monitor generation before using high-power "
-            "appliances."
-        )
-
-    else:
-
-        st.error(
-            f"Solar generation is relatively low at "
-            f"**{prediction:.2f} kW**. "
-            "Consider reducing or delaying flexible "
-            "high-power usage."
-        )
+    st.info("AI insight is currently unavailable.")
 
     st.divider()
 
@@ -558,11 +265,11 @@ if st.button(
     # Prediction Summary
     # ======================================================
 
-    st.subheader("📋 Prediction Summary")
+    st.subheader("Prediction Summary")
 
     summary = pd.DataFrame({
 
-        "Weather Parameter": [
+        "Weather Parameter":[
 
             "Wind Speed",
 
@@ -572,9 +279,9 @@ if st.button(
 
             "Solar Radiation",
 
-            "Air Temperature",
+            "Temperature",
 
-            "Relative Humidity",
+            "Humidity",
 
             "Hour",
 
@@ -584,45 +291,45 @@ if st.button(
 
         ],
 
-        "Value": [
+        "Value":[
 
-            f"{wind_input:.2f} m/s",
+            wind,
 
-            f"{sunshine:.2f} hours",
+            sunshine,
 
-            f"{pressure_input:.2f} hPa",
+            pressure,
 
-            f"{radiation:.2f} W/m²",
+            radiation,
 
-            f"{temperature_input:.2f} °C",
+            temperature,
 
-            f"{humidity_input:.0f}%",
+            humidity,
 
-            hour_input,
+            hour,
 
-            day_input,
+            day,
 
-            month_input
+            month
 
         ]
 
     })
 
     st.dataframe(
+
         summary,
-        use_container_width=True,
-        hide_index=True
+
+        use_container_width=True
+
     )
 
     st.divider()
 
     # ======================================================
-    # Download Prediction Report
+    # Download Report
     # ======================================================
 
-    csv = summary.to_csv(
-        index=False
-    )
+    csv = summary.to_csv(index=False)
 
     st.download_button(
 
