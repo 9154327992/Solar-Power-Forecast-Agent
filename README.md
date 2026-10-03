@@ -7,7 +7,7 @@ The application predicts solar power generation using weather and time-based fea
 ## 🌞 Live Application
 
 **Backend API:**
-[Solar Power Forecast Agent — Render]: [https://github.com/matta-venkata-karthik/Solar-Power-Forecast-Agent](https://solar-power-forecast-agent.onrender.com)
+[Solar Power Forecast Agent — Render]: [https://solar-power-forecast-agent.onrender.com](https://solar-power-forecast-agent.onrender.com)
 
 **Frontend:**
 [Solar Power Forecast Agent — Streamlit]: [https://solar-power-forecast-agent-sombc9mcuyfkyexhlmeqgz.streamlit.app/](https://solar-power-forecast-agent-sombc9mcuyfkyexhlmeqgz.streamlit.app/)
