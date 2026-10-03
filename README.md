@@ -7,7 +7,7 @@ The application predicts solar power generation using weather and time-based fea
 ## 🌞 Live Application
 
 **Backend API:**
-[Solar Power Forecast Agent — Render]: [https://github.com/9154327992/Solar-Power-Forecast-Agent](https://solar-power-forecast-agent.onrender.com)
+[Solar Power Forecast Agent — Render]: [https://github.com/matta-venkata-karthik/Solar-Power-Forecast-Agent](https://solar-power-forecast-agent.onrender.com)
 
 **Frontend:**
 [Solar Power Forecast Agent — Streamlit]: [https://solar-power-forecast-agent-sombc9mcuyfkyexhlmeqgz.streamlit.app/](https://solar-power-forecast-agent-sombc9mcuyfkyexhlmeqgz.streamlit.app/)
@@ -217,7 +217,7 @@ Solar-Power-Forecast-Agent/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/9154327992/Solar-Power-Forecast-Agent.git
+git clone https://github.com/matta-venkata-karthik/Solar-Power-Forecast-Agent.git
 ```
 
 ### 2. Enter the project directory
@@ -478,4 +478,4 @@ Matta Venkata Karthik
 
 🏫 College LinkedIn: https://www.linkedin.com/company/datascience-nriit
 
-💻 GitHub: https://github.com/9154327992
+💻 GitHub: https://github.com/matta-venkata-karthik
